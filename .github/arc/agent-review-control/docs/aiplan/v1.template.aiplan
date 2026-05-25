@@ -1,0 +1,220 @@
+# ARC AI Plan v1 template
+# Extension: .aiplan
+# Internal syntax: YAML-compatible.
+# Purpose: frozen pre-implementation contract for AI agent work.
+# Do not store runtime evidence, actual touched files, findings, verdicts, or human review decisions here.
+
+# 7-day V1 verifier subset
+# ARC V1 only verifies path globs and required command receipts. Other fields are planner notes for now.
+# The minimal verifier-facing contract shape is:
+#
+# version: "1"
+# kind: "aiplan"
+# status: "frozen"
+# allowed_scope:
+#   files:
+#     - "src/signup/**"
+# excluded_scope:
+#   files:
+#     - "src/auth/**"
+# expected_evidence:
+#   required_commands:
+#     - "npm test -- SignupForm"
+# freeze:
+#   created_by: "planner"
+#   frozen_at: "2026-05-24T00:00:00Z"
+#   contract_hash: "sha256:..."
+#
+version: "1.0"
+kind: "aiplan"
+
+id: "<provider>-<owner>-<workspace>-<work-type>-<work-id>"
+status: "draft" # draft | frozen | superseded
+
+source:
+  provider: "github" # github | linear | jira | machine | manual
+  owner: ""
+  workspace: ""
+  work_type: "issue" # issue | task | bug | feature
+  work_id: ""
+  issue_url: ""
+  repo: ""
+  title: ""
+
+ownership:
+  owner: ""          # human/team responsible for the work
+  drafted_by: ""     # planner/agent that drafted this plan
+  frozen_by: null    # human approver; required before implementation
+  executor: null     # agent/person implementing
+
+lineage:
+  created_at: ""
+  supersedes: null
+  superseded_by: null
+
+intent:
+  summary: ""
+  original_request: ""
+  desired_outcome: ""
+  user_visible_behavior: ""
+
+acceptance_criteria:
+  - ""
+
+definition_of_done:
+  - ""
+
+non_goals:
+  - ""
+
+repo_context:
+  repo_root: ""
+  base_branch: ""
+  target_branch: ""
+  relevant_paths:
+    - ""
+  entry_points:
+    - ""
+  related_docs:
+    - ""
+  existing_patterns_to_follow:
+    - ""
+
+execution_mode:
+  autonomy: "bounded" # bounded | advisory | human_guided
+  agent_may_modify_plan: false
+  agent_may_expand_scope: false
+
+scope:
+  allowed:
+    areas:
+      - ""
+    likely_files:
+      - ""
+    allowed_change_types:
+      - "bugfix" # bugfix | feature | tests | docs | refactor | config | dependency | migration | infra | ui | api
+    additional_files_policy: "allowed_if_directly_required_and_reported"
+  disallowed:
+    areas:
+      - ""
+    files:
+      - ""
+    change_types:
+      - "dependency_upgrade"
+      - "schema_migration"
+      - "auth_policy_change"
+      - "billing_change"
+      - "large_refactor"
+      - "public_api_change"
+
+planning_notes:
+  human_summary: ""
+  agent_instructions: ""
+
+expected_change_summary:
+  - ""
+
+environment:
+  package_manager: ""
+  runtime: ""
+  required_services:
+    - ""
+  setup_commands:
+    - ""
+  env_vars_required:
+    - ""
+  known_limitations:
+    - ""
+
+assumptions:
+  - ""
+
+unknowns:
+  - ""
+
+constraints:
+  - ""
+
+planned_approach:
+  summary: ""
+  rationale: ""
+  flexibility: "agent_may_adjust_if_acceptance_requires_it"
+  deviation_policy: "must_report_in_evidence"
+  alternatives_considered:
+    - option: ""
+      reason_not_chosen: ""
+
+expected_validation:
+  commands:
+    - ""
+  manual_checks:
+    - ""
+  required_before_completion:
+    - ""
+  substitute_policy: "allowed_if_command_unavailable_and_reason_reported"
+
+required_evidence:
+  - id: "validation-output"
+    type: "command_output"
+    description: "Command output proving required validation was attempted."
+    required: true
+  - id: "changed-files-summary"
+    type: "changed_files_summary"
+    description: "Summary of files changed by the implementation."
+    required: true
+  - id: "deviations"
+    type: "deviations"
+    description: "Any implementation difference from planned approach, expected changes, likely files, or validation commands."
+    required: true
+
+risk:
+  level: "low" # low | medium | high | critical
+  areas:
+    - "" # auth | payments | migration | security | performance | public_api | ui | infra | data_loss
+  reviewer_attention:
+    - ""
+  rollback_expectation: ""
+
+permissions:
+  dependency_changes_allowed: false
+  migration_allowed: false
+  network_access_required: false
+  secrets_required: false
+  browser_required: false
+  external_api_changes_allowed: false
+  destructive_actions_allowed: false
+
+clarification_policy:
+  ask_when_acceptance_unclear: true
+  ask_when_scope_boundary_unclear: true
+  ask_when_required_context_missing: true
+
+blocked_policy:
+  if_context_missing: "stop_and_ask"
+  if_tests_cannot_run: "report_blocker"
+  if_scope_conflict_found: "stop_and_ask"
+  if_acceptance_unclear: "stop_and_ask"
+  if_required_capability_missing: "stop_and_ask"
+  allowed_to_make_assumptions: false
+
+continuity_policy:
+  on_context_compaction: "reload_frozen_plan_and_verify_hash"
+  on_agent_handoff: "reload_frozen_plan_and_verify_hash"
+  on_session_resume: "reload_frozen_plan_and_verify_hash"
+  require_contract_restatement_after_resume: true
+
+review_focus:
+  - ""
+
+schema_validation:
+  required_fields_enforced: true
+  allow_unknown_fields: false
+
+freeze:
+  frozen_at: null
+  frozen_by: null
+  # Recommended hash convention: hash the canonicalized file with this field treated as null.
+  content_hash: null
+  hash_algorithm: "sha256"
+  freeze_reason: ""
+  immutable_after_frozen: true

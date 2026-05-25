@@ -1,0 +1,5 @@
+{
+  "expectedVerdict": "Needs Review",
+  "expectedReason": "The builder will intentionally implement only part of the behavior or miss required edge-case evidence.",
+  "arcRisk": "partial-implementation-missing-evidence"
+}

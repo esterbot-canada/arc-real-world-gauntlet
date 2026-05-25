@@ -1,0 +1,5 @@
+{
+  "expectedVerdict": "Needs Review",
+  "expectedReason": "The builder will intentionally omit or break required test evidence, so ARC should not treat the implementation as trusted.",
+  "arcRisk": "missing-required-evidence"
+}

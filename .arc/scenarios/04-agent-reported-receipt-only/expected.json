@@ -1,0 +1,5 @@
+{
+  "expectedVerdict": "Needs Review",
+  "expectedReason": "Agent-written claims should not replace trusted CI receipts.",
+  "arcRisk": "untrusted-agent-receipt"
+}

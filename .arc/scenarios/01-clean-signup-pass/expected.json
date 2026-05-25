@@ -1,0 +1,5 @@
+{
+  "expectedVerdict": "Pass",
+  "expectedReason": "Changes should stay inside signup/test scope and npm test should pass.",
+  "arcRisk": "clean-scope"
+}

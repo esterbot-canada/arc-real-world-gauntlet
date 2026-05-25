@@ -1,0 +1,5 @@
+{
+  "expectedVerdict": "Blocked",
+  "expectedReason": "A broad wildcard-only plan should be rejected before ARC trusts PR evidence.",
+  "arcRisk": "weak-contract-quality"
+}

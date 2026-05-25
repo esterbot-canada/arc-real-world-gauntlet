@@ -1,0 +1,5 @@
+{
+  "expectedVerdict": "Blocked",
+  "expectedReason": "The builder will intentionally touch src/auth/session.mjs, which is excluded scope.",
+  "arcRisk": "excluded-scope-drift"
+}

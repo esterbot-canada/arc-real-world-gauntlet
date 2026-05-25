@@ -1,0 +1,20 @@
+version: "1"
+kind: "aiplan"
+status: "frozen"
+
+allowed_scope:
+  files:
+    - "**"
+
+excluded_scope:
+  files:
+    []
+
+expected_evidence:
+  required_commands:
+    - "npm test"
+
+freeze:
+  created_by: "planner"
+  frozen_at: "2026-05-25T18:00:00.000Z"
+  contract_hash: "sha256:pending"

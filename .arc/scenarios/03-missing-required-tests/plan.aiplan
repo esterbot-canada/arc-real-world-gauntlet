@@ -1,0 +1,23 @@
+version: "1"
+kind: "aiplan"
+status: "frozen"
+
+allowed_scope:
+  files:
+    - "src/settings/**"
+    - "test/settings.test.mjs"
+
+excluded_scope:
+  files:
+    - "src/auth/**"
+    - "src/billing/**"
+    - "src/db/**"
+
+expected_evidence:
+  required_commands:
+    - "npm test"
+
+freeze:
+  created_by: "planner"
+  frozen_at: "2026-05-25T18:00:00.000Z"
+  contract_hash: "sha256:e1e69b3d9ca60b397787ffa67ed02abf1bd6dabcbed2db78ada0b36870090353"

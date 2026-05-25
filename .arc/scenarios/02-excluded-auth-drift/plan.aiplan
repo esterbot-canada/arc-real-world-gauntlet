@@ -1,0 +1,21 @@
+version: "1"
+kind: "aiplan"
+status: "frozen"
+
+allowed_scope:
+  files:
+    - "src/signup/**"
+    - "test/**"
+
+excluded_scope:
+  files:
+    - "src/auth/**"
+
+expected_evidence:
+  required_commands:
+    - "npm test"
+
+freeze:
+  created_by: "planner"
+  frozen_at: "2026-05-25T18:00:00.000Z"
+  contract_hash: "sha256:5d41308eb24b142db763b9ec2f6715732912c7a9e4f0c965e6ec2d1b31c2de7c"

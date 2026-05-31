@@ -134,6 +134,18 @@ async function loadChangedFileTexts(changedFiles) {
   return texts;
 }
 
+async function readReceiptsTextOrEmpty(path) {
+  try {
+    return await readFile(path, 'utf8');
+  } catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
+      console.warn(`ARC PR check warning: command receipts file not found at ${path}; continuing with empty receipts so a Trust Brief can still be rendered.`);
+      return '[]';
+    }
+    throw error;
+  }
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
@@ -153,7 +165,7 @@ async function main() {
 
   const [planText, receiptsText, changedFiles] = await Promise.all([
     readFile(options.plan, 'utf8'),
-    readFile(options.receipts, 'utf8'),
+    readReceiptsTextOrEmpty(options.receipts),
     loadChangedFilesForRange(process.cwd(), diffSource.range),
   ]);
   const changedFileTexts = await loadChangedFileTexts(changedFiles);

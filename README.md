@@ -14,6 +14,17 @@ It is intentionally small, but shaped like a real SaaS app so scope boundaries m
 
 The purpose is not to build a production app. The purpose is to create realistic GitHub issues, freeze `.aiplan` contracts, let builder agents implement PRs, and observe whether ARC returns the right Trust Brief verdict.
 
+
+## Prototype tester path
+
+ARC is now ready for a small trusted-tester loop. Start with the tester guide:
+
+```text
+docs/prototype-tester-guide.md
+```
+
+Use it to compare a clean passing PR with a mixed/failing PR, then ask whether the Trust Brief makes AI-generated code review easier.
+
 ## Proof command
 
 Run the full ARC proof suite locally:

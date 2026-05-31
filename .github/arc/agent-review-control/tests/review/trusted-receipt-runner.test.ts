@@ -10,7 +10,11 @@ const plan: MinimalAiplanV1 = {
   status: 'frozen',
   allowed_scope: { files: ['src/signup/**'] },
   excluded_scope: { files: [] },
-  expected_evidence: { required_commands: ['npm test -- SignupForm', 'npm run build'] },
+  expected_evidence: {
+    required_commands: ['npm test -- SignupForm', 'npm run build'],
+    required_changed_files: [],
+    required_test_patterns: [],
+  },
   freeze: { created_by: 'planner', frozen_at: '2026-05-24T00:00:00Z', contract_hash: 'sha256:test' },
 };
 
@@ -35,7 +39,7 @@ test('runs required commands from the frozen plan and emits trusted_ci receipts'
 
 test('preserves failed exit codes instead of hiding command failure', async () => {
   const result = await runTrustedReceipts({
-    plan: { ...plan, expected_evidence: { required_commands: ['npm test -- SignupForm'] } },
+    plan: { ...plan, expected_evidence: { ...plan.expected_evidence, required_commands: ['npm test -- SignupForm'] } },
     logDir: 'tmp/arc-logs',
     runCommand: async () => ({ exitCode: 2, output: 'boom\n' }),
   });
@@ -47,7 +51,7 @@ test('preserves failed exit codes instead of hiding command failure', async () =
 
 test('empty required command list writes no receipts', async () => {
   const result = await runTrustedReceipts({
-    plan: { ...plan, expected_evidence: { required_commands: [] } },
+    plan: { ...plan, expected_evidence: { ...plan.expected_evidence, required_commands: [] } },
     logDir: 'tmp/arc-logs',
     runCommand: async () => { throw new Error('should not run'); },
   });

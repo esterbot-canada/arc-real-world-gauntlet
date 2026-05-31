@@ -1,0 +1,22 @@
+{
+  "changedFiles": [
+    "src/settings/profile.mjs",
+    "test/settings.test.mjs"
+  ],
+  "receipts": [
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "provenance": "agent_reported",
+      "logPath": ".arc/tmp/scenario-04-command-logs/01-npm-test.log"
+    }
+  ],
+  "diffSource": {
+    "range": "scenario-04-fixture",
+    "trust": "provider_verified",
+    "description": "gauntlet fixture changed files"
+  },
+  "expectedMarkdownIncludes": [
+    "Agent-reported command, not trusted evidence: npm test"
+  ]
+}

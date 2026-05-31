@@ -4,7 +4,7 @@ export type MinimalAiplanV1 = {
   status: 'frozen';
   allowed_scope: { files: string[] };
   excluded_scope: { files: string[] };
-  expected_evidence: { required_commands: string[] };
+  expected_evidence: { required_commands: string[]; required_changed_files?: string[] };
   freeze: {
     created_by: string;
     frozen_at: string;
@@ -24,7 +24,7 @@ export type MinimalAiplanValidationResult =
 const TOP_LEVEL_FIELDS = new Set(['version', 'kind', 'status', 'allowed_scope', 'excluded_scope', 'expected_evidence', 'freeze']);
 const ALLOWED_SCOPE_FIELDS = new Set(['files']);
 const EXCLUDED_SCOPE_FIELDS = new Set(['files']);
-const EXPECTED_EVIDENCE_FIELDS = new Set(['required_commands']);
+const EXPECTED_EVIDENCE_FIELDS = new Set(['required_commands', 'required_changed_files']);
 const FREEZE_FIELDS = new Set(['created_by', 'frozen_at', 'contract_hash']);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -146,6 +146,10 @@ export function validateMinimalAiplan(input: unknown): MinimalAiplanValidationRe
     errors.push({ field: 'expected_evidence.required_commands', reason: 'Expected array of command strings.' });
   }
 
+  if (expectedEvidence?.required_changed_files !== undefined && !stringArray(expectedEvidence.required_changed_files, { requireNonEmpty: true })) {
+    errors.push({ field: 'expected_evidence.required_changed_files', reason: 'Expected non-empty array of file globs when defined.' });
+  }
+
   const allowedFiles = allowedScope && stringArray(allowedScope.files, { requireNonEmpty: true })
     ? validateGlobArray('allowed_scope.files', allowedScope.files, { allowGlobalWildcard: false }, errors)
     : [];
@@ -155,6 +159,9 @@ export function validateMinimalAiplan(input: unknown): MinimalAiplanValidationRe
   const requiredCommands = expectedEvidence && stringArray(expectedEvidence.required_commands, { requireNonEmpty: false })
     ? validateCommandArray('expected_evidence.required_commands', expectedEvidence.required_commands, errors)
     : [];
+  const requiredChangedFiles = expectedEvidence && stringArray(expectedEvidence.required_changed_files, { requireNonEmpty: true })
+    ? validateGlobArray('expected_evidence.required_changed_files', expectedEvidence.required_changed_files, { allowGlobalWildcard: false }, errors)
+    : undefined;
 
   if (!freeze) {
     errors.push({ field: 'freeze', reason: 'Expected freeze metadata.' });
@@ -175,7 +182,10 @@ export function validateMinimalAiplan(input: unknown): MinimalAiplanValidationRe
       status: 'frozen',
       allowed_scope: { files: allowedFiles },
       excluded_scope: { files: excludedFiles },
-      expected_evidence: { required_commands: requiredCommands },
+      expected_evidence: {
+        required_commands: requiredCommands,
+        ...(requiredChangedFiles === undefined ? {} : { required_changed_files: requiredChangedFiles }),
+      },
       freeze: {
         created_by: freeze!.created_by as string,
         frozen_at: freeze!.frozen_at as string,

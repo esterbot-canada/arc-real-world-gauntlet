@@ -4,10 +4,13 @@ import { checkRequiredCommandReceipts, type CommandReceipt } from './command-rec
 import { checkScopeAgainstPlan } from './scope-check.ts';
 import { renderTrustBriefMarkdown, type TrustBriefStatus } from './trust-brief.ts';
 import type { ArcDiffSource } from '../gate/diff-range.ts';
+import { pathMatchesAnyGlob } from '../aiplan/path-globs.ts';
+import { checkImportBoundary } from './import-boundary.ts';
 
 export type ArcPrCheckInput = {
   planText: string;
   changedFiles: string[];
+  changedFileTexts?: Record<string, string>;
   receipts: CommandReceipt[];
   diffSource?: ArcDiffSource;
 };
@@ -114,6 +117,33 @@ export function createArcPrCheck(input: ArcPrCheckInput): ArcPrCheckResult {
     } else {
       focusQuestions.push(`Was '${command}' verified by CI/provider evidence? Impact: agent-reported command receipts can be forged.`);
       receipts.push(`Agent-reported command, not trusted evidence: ${command}`);
+    }
+  }
+
+  for (const requiredChangedFile of parsedPlan.plan.expected_evidence.required_changed_files ?? []) {
+    if (input.changedFiles.some((file) => pathMatchesAnyGlob(file, [requiredChangedFile]))) {
+      receipts.push(`Required changed-file evidence present: ${requiredChangedFile}`);
+    } else {
+      focusQuestions.push(`Did the agent update \`${requiredChangedFile}\`? Impact: the frozen plan required this changed-file evidence, but it was not present in the PR diff.`);
+      receipts.push(`Missing required changed-file evidence: ${requiredChangedFile}`);
+    }
+  }
+
+  if (input.changedFileTexts && parsedPlan.plan.excluded_scope.files.length > 0) {
+    const importBoundary = checkImportBoundary({
+      entryFiles: input.changedFiles,
+      fileTexts: input.changedFileTexts,
+      excludedFiles: parsedPlan.plan.excluded_scope.files,
+      maxDepth: 1,
+    });
+
+    const seenImportViolations = new Set<string>();
+    for (const violation of importBoundary.violations) {
+      const key = `${violation.importer}\0${violation.resolvedPath}`;
+      if (seenImportViolations.has(key)) continue;
+      seenImportViolations.add(key);
+      focusQuestions.push(`Why does \`${violation.importer}\` import excluded scope \`${violation.resolvedPath}\`? Impact: changed code may execute or test code outside the frozen assignment boundary.`);
+      receipts.push(`Import boundary crossed: ${violation.chain.join(' -> ')}`);
     }
   }
 

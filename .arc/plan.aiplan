@@ -4,20 +4,26 @@ status: "frozen"
 
 allowed_scope:
   files:
-    - "src/api/**"
-    - "test/userService.test.mjs"
+    - ".arc/plan.aiplan"
+    - ".arc/scenarios/**"
+    - ".github/arc/agent-review-control/**"
+    - ".github/workflows/arc-gauntlet.yml"
+    - "README.md"
+    - "package.json"
+    - "scripts/run-arc-gauntlet.mjs"
 
 excluded_scope:
   files:
-    - "src/auth/**"
-    - "src/billing/**"
-    - "src/db/**"
+    - "src/**"
+    - "test/**"
+    - "package-lock.json"
 
 expected_evidence:
   required_commands:
+    - "npm run arc:gauntlet"
     - "npm test"
 
 freeze:
   created_by: "planner"
-  frozen_at: "2026-05-25T18:00:00.000Z"
-  contract_hash: "sha256:a31fe8419b7fbd6b01fe2b466928803670787225a329b0eb6be62732047fada9"
+  frozen_at: "2026-05-31T04:30:00.000Z"
+  contract_hash: "sha256:8d56d879f3c85b1a0745eac47b682596fa9577fbb57e5311a36ac31d9b3ce354"

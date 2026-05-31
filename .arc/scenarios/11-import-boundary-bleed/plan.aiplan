@@ -4,8 +4,8 @@ status: "frozen"
 
 allowed_scope:
   files:
-    - "src/api/**"
-    - "test/userService.test.mjs"
+    - "src/signup/**"
+    - "test/signup.test.mjs"
 
 excluded_scope:
   files:
@@ -17,9 +17,9 @@ expected_evidence:
   required_commands:
     - "npm test"
   required_changed_files:
-    - "test/userService.test.mjs"
+    - "src/signup/test-helpers.mjs"
 
 freeze:
   created_by: "planner"
-  frozen_at: "2026-05-25T18:00:00.000Z"
-  contract_hash: "sha256:c81e8171d64eb2364c86cbfabb31a686ac9eb52a01dd438a22949db2d89c0b93"
+  frozen_at: "2026-05-31T00:00:00.000Z"
+  contract_hash: "sha256:804a1b73ff5b00f06dd78423d1afd051ba78237e09af1cedf5d818be03dad3ea"

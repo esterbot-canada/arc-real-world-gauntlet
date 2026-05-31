@@ -1,0 +1,48 @@
+name: ARC Gauntlet
+
+on:
+  pull_request:
+    paths:
+      - '.arc/scenarios/**'
+      - '.github/arc/agent-review-control/**'
+      - 'scripts/run-arc-gauntlet.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/arc-gauntlet.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.arc/scenarios/**'
+      - '.github/arc/agent-review-control/**'
+      - 'scripts/run-arc-gauntlet.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/arc-gauntlet.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  arc-gauntlet:
+    name: ARC Gauntlet Fixtures
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: .github/arc/agent-review-control/package-lock.json
+
+      - name: Install ARC verifier dependencies
+        run: npm ci --prefix .github/arc/agent-review-control
+
+      - name: Run ARC gauntlet fixtures
+        run: npm run arc:gauntlet
+
+      - name: Run baseline app tests
+        run: npm test

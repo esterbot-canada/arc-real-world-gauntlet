@@ -22,6 +22,22 @@ function mustRun(command: string, args: string[], cwd: string) {
   return result.stdout.trim();
 }
 
+async function freezePlanHash(planPath: string, repo: string) {
+  const hashScript = `
+import { readFileSync, writeFileSync } from 'node:fs';
+import { parseMinimalAiplanText } from ${JSON.stringify(path.join(appRoot, 'lib/aiplan/minimal-parser.ts'))};
+import { computeMinimalAiplanContractHash } from ${JSON.stringify(path.join(appRoot, 'lib/aiplan/contract-hash.ts'))};
+const planPath = process.argv[1];
+const raw = readFileSync(planPath, 'utf8');
+const normalized = raw.replace(/contract_hash: "sha256:[^"]+"/, 'contract_hash: "sha256:placeholder"');
+const parsed = parseMinimalAiplanText(normalized);
+if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
+writeFileSync(planPath, normalized.replace('sha256:placeholder', computeMinimalAiplanContractHash(parsed.plan)));
+`;
+  const result = run(process.execPath, ['--input-type=module', '--eval', hashScript, planPath], { cwd: repo });
+  assert.equal(result.status, 0, result.stderr);
+}
+
 async function writePlan(repo: string, command = "node -e 'console.log(42)'") {
   const planPath = path.join(repo, '.arc/plan.aiplan');
   await mkdir(path.dirname(planPath), { recursive: true });
@@ -43,18 +59,7 @@ freeze:
   contract_hash: "sha256:placeholder"
 `);
 
-  const hashScript = `
-import { readFileSync, writeFileSync } from 'node:fs';
-import { parseMinimalAiplanText } from ${JSON.stringify(path.join(appRoot, 'lib/aiplan/minimal-parser.ts'))};
-import { computeMinimalAiplanContractHash } from ${JSON.stringify(path.join(appRoot, 'lib/aiplan/contract-hash.ts'))};
-const planPath = process.argv[1];
-const raw = readFileSync(planPath, 'utf8');
-const parsed = parseMinimalAiplanText(raw);
-if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
-writeFileSync(planPath, raw.replace('sha256:placeholder', computeMinimalAiplanContractHash(parsed.plan)));
-`;
-  const result = run(process.execPath, ['--input-type=module', '--eval', hashScript, planPath], { cwd: repo });
-  assert.equal(result.status, 0, result.stderr);
+  await freezePlanHash(planPath, repo);
   return planPath;
 }
 
@@ -89,12 +94,30 @@ async function runArcWorkflow(repo: string, planPath: string, base: string, name
   const eventPath = await writePrEvent(repo, base, name);
   const receiptsPath = path.join(repo, `.arc/${name}.receipts.json`);
   const briefPath = path.join(repo, `.arc/${name}.trust-brief.md`);
+  const planArg = path.relative(repo, planPath);
 
-  const receiptRun = run(process.execPath, [path.join(appRoot, 'scripts/arc-run-required-commands.mjs'), '--plan', planPath, '--out', receiptsPath, '--log-dir', `tmp/arc-workflow/${name}/logs`], { cwd: repo });
+  const receiptRun = run(process.execPath, [path.join(appRoot, 'scripts/arc-run-required-commands.mjs'), '--plan', planArg, '--out', receiptsPath, '--log-dir', `tmp/arc-workflow/${name}/logs`], { cwd: repo });
   assert.equal(receiptRun.status, 0, receiptRun.stderr);
 
-  const checkRun = run(process.execPath, [path.join(appRoot, 'scripts/arc-pr-check.mjs'), '--plan', planPath, '--receipts', receiptsPath, '--out', briefPath], {
+  const checkRun = run(process.execPath, [path.join(appRoot, 'scripts/arc-pr-check.mjs'), '--plan', planArg, '--receipts', receiptsPath, '--out', briefPath], {
     cwd: repo,
+    env: { GITHUB_EVENT_PATH: eventPath },
+  });
+  const brief = await readFile(briefPath, 'utf8');
+  return { checkRun, brief };
+}
+
+async function runArcWorkflowFromTrustedVerifier(repo: string, planPath: string, base: string, name: string) {
+  const eventPath = await writePrEvent(repo, base, name);
+  const receiptsPath = path.join(repo, `.arc/${name}.receipts.json`);
+  const briefPath = path.join(repo, `.arc/${name}.trust-brief.md`);
+  const planArg = path.relative(repo, planPath);
+
+  const receiptRun = run(process.execPath, [path.join(appRoot, 'scripts/arc-run-required-commands.mjs'), '--plan', planPath, '--cwd', repo, '--out', receiptsPath, '--log-dir', `.arc/tmp/arc-workflow/${name}/logs`], { cwd: appRoot });
+  assert.equal(receiptRun.status, 0, receiptRun.stderr);
+
+  const checkRun = run(process.execPath, [path.join(appRoot, 'scripts/arc-pr-check.mjs'), '--repo-root', repo, '--plan', planArg, '--receipts', receiptsPath, '--out', briefPath], {
+    cwd: appRoot,
     env: { GITHUB_EVENT_PATH: eventPath },
   });
   const brief = await readFile(briefPath, 'utf8');
@@ -105,11 +128,12 @@ async function runArcWorkflowAfterReceiptFailure(repo: string, planPath: string,
   const eventPath = await writePrEvent(repo, base, name);
   const receiptsPath = path.join(repo, `.arc/${name}.missing-receipts.json`);
   const briefPath = path.join(repo, `.arc/${name}.trust-brief.md`);
+  const planArg = path.relative(repo, planPath);
 
-  const receiptRun = run(process.execPath, [path.join(appRoot, 'scripts/arc-run-required-commands.mjs'), '--plan', planPath, '--out', receiptsPath, '--log-dir', `tmp/arc-workflow/${name}/logs`], { cwd: repo });
+  const receiptRun = run(process.execPath, [path.join(appRoot, 'scripts/arc-run-required-commands.mjs'), '--plan', planArg, '--out', receiptsPath, '--log-dir', `tmp/arc-workflow/${name}/logs`], { cwd: repo });
   assert.notEqual(receiptRun.status, 0, receiptRun.stderr);
 
-  const checkRun = run(process.execPath, [path.join(appRoot, 'scripts/arc-pr-check.mjs'), '--plan', planPath, '--receipts', receiptsPath, '--out', briefPath], {
+  const checkRun = run(process.execPath, [path.join(appRoot, 'scripts/arc-pr-check.mjs'), '--plan', planArg, '--receipts', receiptsPath, '--out', briefPath], {
     cwd: repo,
     env: { GITHUB_EVENT_PATH: eventPath },
   });
@@ -127,7 +151,8 @@ test('ARC workflow passes only when frozen contract, provider diff, scope, and t
 
   assert.equal(checkRun.status, 0, checkRun.stderr);
   assert.match(brief, /## ARC Trust Brief: Pass/);
-  assert.match(brief, /Changed files stayed inside approved scope/);
+  assert.match(brief, /Changed files stayed inside the base-branch frozen contract/);
+  assert.match(brief, /Contract loaded from trusted base ref:/);
   assert.match(brief, /Required command passed: node -e/);
 });
 
@@ -143,6 +168,51 @@ test('ARC workflow blocks excluded-scope drift even when required command receip
   assert.match(brief, /## ARC Trust Brief: Blocked/);
   assert.match(brief, /excluded scope/);
   assert.match(brief, /src\/auth\/session\.ts/);
+  assert.match(brief, /Contract loaded from trusted base ref:/);
+});
+
+test('ARC workflow blocks self-attested PR-head plan rewrites that widen scope', async () => {
+  const { repo, planPath, base } = await initWorkflowRepo();
+  const originalPlan = await readFile(planPath, 'utf8');
+  await writeFile(planPath, originalPlan.replace('src/signup/**', 'src/signup/**"\n    - "src/auth/**'));
+  await freezePlanHash(planPath, repo);
+  await writeFile(path.join(repo, 'src/auth/session.ts'), 'export const auth = 2;\n');
+  mustRun('git', ['add', '.'], repo);
+  mustRun('git', ['commit', '-q', '-m', 'rewrite plan to allow auth implementation'], repo);
+
+  const { checkRun, brief } = await runArcWorkflow(repo, planPath, base, 'self-attested-plan');
+
+  assert.equal(checkRun.status, 1);
+  assert.match(brief, /## ARC Trust Brief: Blocked/);
+  assert.match(brief, /refuses self-attested contract changes/);
+  assert.match(brief, /Frozen contract file changed in PR: \.arc\/plan\.aiplan/);
+  assert.match(brief, /Contract loaded from trusted base ref:/);
+  assert.match(brief, /Excluded file touched: src\/auth\/session\.ts/);
+});
+
+test('trusted verifier invocation is not fooled by PR-head verifier rewrites', async () => {
+  const { repo, planPath, base } = await initWorkflowRepo();
+  await mkdir(path.join(repo, '.github/arc/agent-review-control/scripts'), { recursive: true });
+  await writeFile(path.join(repo, '.github/arc/agent-review-control/scripts/arc-pr-check.mjs'), `#!/usr/bin/env node
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname } from 'node:path';
+const outIndex = process.argv.indexOf('--out');
+const out = outIndex === -1 ? 'arc-trust-brief.md' : process.argv[outIndex + 1];
+await mkdir(dirname(out), { recursive: true });
+await writeFile(out, '## ARC Trust Brief: Pass\\n\\nMalicious PR-head verifier lied.\\n');
+console.log('ARC Trust Brief: Pass');
+`);
+  await writeFile(path.join(repo, 'src/auth/session.ts'), 'export const auth = 2;\n');
+  mustRun('git', ['add', '.'], repo);
+  mustRun('git', ['commit', '-q', '-m', 'rewrite verifier and touch auth'], repo);
+
+  const { checkRun, brief } = await runArcWorkflowFromTrustedVerifier(repo, planPath, base, 'trusted-verifier-root');
+
+  assert.equal(checkRun.status, 1);
+  assert.match(brief, /## ARC Trust Brief: Blocked/);
+  assert.match(brief, /Excluded file touched: src\/auth\/session\.ts/);
+  assert.match(brief, /Outside allowed scope: \.github\/arc\/agent-review-control\/scripts\/arc-pr-check\.mjs/);
+  assert.doesNotMatch(brief, /Malicious PR-head verifier lied/);
 });
 
 test('ARC workflow still renders a Trust Brief when the frozen plan hash was tampered and receipts are missing', async () => {
@@ -159,8 +229,8 @@ test('ARC workflow still renders a Trust Brief when the frozen plan hash was tam
   assert.equal(checkRun.status, 1);
   assert.match(checkRun.stderr, /command receipts file not found/);
   assert.match(brief, /## ARC Trust Brief: Blocked/);
-  assert.match(brief, /Frozen \.aiplan hash mismatch/);
-  assert.match(brief, /Actual hash from current plan content/);
+  assert.match(brief, /refuses self-attested contract changes/);
+  assert.match(brief, /Frozen contract file changed in PR: \.arc\/plan\.aiplan/);
 });
 
 test('ARC workflow still renders a Trust Brief when the frozen plan is invalid and receipts are missing', async () => {
@@ -177,8 +247,8 @@ test('ARC workflow still renders a Trust Brief when the frozen plan is invalid a
   assert.equal(checkRun.status, 1);
   assert.match(checkRun.stderr, /command receipts file not found/);
   assert.match(brief, /## ARC Trust Brief: Blocked/);
-  assert.match(brief, /Invalid or non-frozen \.aiplan/);
-  assert.match(brief, /Allowed scope glob is too broad/);
+  assert.match(brief, /refuses self-attested contract changes/);
+  assert.match(brief, /Frozen contract file changed in PR: \.arc\/plan\.aiplan/);
 });
 
 test('ARC composite action defaults to blocking Needs Review for required GitHub checks', async () => {

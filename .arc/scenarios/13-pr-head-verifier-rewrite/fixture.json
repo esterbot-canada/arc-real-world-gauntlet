@@ -1,0 +1,31 @@
+{
+  "changedFiles": [
+    ".github/arc/agent-review-control/scripts/arc-pr-check.mjs",
+    "src/auth/session.mjs"
+  ],
+  "receipts": [
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "provenance": "trusted_ci",
+      "logPath": ".arc/tmp/scenario-13-command-logs/01-npm-test.log"
+    }
+  ],
+  "diffSource": {
+    "range": "scenario-13-fixture",
+    "trust": "provider_verified",
+    "description": "gauntlet fixture changed files",
+    "baseRef": "base-sha",
+    "headRef": "head-sha"
+  },
+  "trustedPlanSource": {
+    "path": ".arc/plan.aiplan",
+    "ref": "base-sha",
+    "changedInPr": false
+  },
+  "expectedMarkdownIncludes": [
+    "Excluded file touched: .github/arc/agent-review-control/scripts/arc-pr-check.mjs",
+    "Excluded file touched: src/auth/session.mjs",
+    "Contract loaded from trusted base ref: base-sha:.arc/plan.aiplan"
+  ]
+}

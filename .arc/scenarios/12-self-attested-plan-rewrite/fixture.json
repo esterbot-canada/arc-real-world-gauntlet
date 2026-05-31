@@ -1,0 +1,32 @@
+{
+  "changedFiles": [
+    ".arc/plan.aiplan",
+    "src/auth/session.mjs"
+  ],
+  "receipts": [
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "provenance": "trusted_ci",
+      "logPath": ".arc/tmp/scenario-12-command-logs/01-npm-test.log"
+    }
+  ],
+  "diffSource": {
+    "range": "scenario-12-fixture",
+    "trust": "provider_verified",
+    "description": "gauntlet fixture changed files",
+    "baseRef": "base-sha",
+    "headRef": "head-sha"
+  },
+  "trustedPlanSource": {
+    "path": ".arc/plan.aiplan",
+    "ref": "base-sha",
+    "changedInPr": true
+  },
+  "expectedMarkdownIncludes": [
+    "refuses self-attested contract changes",
+    "Frozen contract file changed in PR: .arc/plan.aiplan",
+    "Excluded file touched: src/auth/session.mjs",
+    "Contract loaded from trusted base ref: base-sha:.arc/plan.aiplan"
+  ]
+}

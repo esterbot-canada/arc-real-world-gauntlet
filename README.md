@@ -51,6 +51,8 @@ npm test
 | `09-ci-green-wrong-area` | Blocked | Passing tests do not excuse changes in an explicitly excluded area. |
 | `10-partial-implementation-missing-evidence` | Needs Review | Passing `npm test` is not enough when required changed-file evidence is missing. |
 | `11-import-boundary-bleed` | Needs Review | Changed allowed files cannot quietly import/re-export excluded scope without review. |
+| `12-self-attested-plan-rewrite` | Blocked | A PR cannot rewrite the frozen `.aiplan`, recompute its hash, and self-attest broader scope. |
+| `13-pr-head-verifier-rewrite` | Blocked | A PR-head ARC verifier rewrite is treated as PR data; trusted verifier code must come from the base checkout. |
 
 ## ARC principle
 

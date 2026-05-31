@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 
 import { parseMinimalAiplanText } from '../lib/aiplan/minimal-parser.ts';
 import { verifyMinimalAiplanContractHash } from '../lib/aiplan/contract-hash.ts';
@@ -15,6 +16,7 @@ Options:
   --plan <path>     Frozen minimal .aiplan file
   --out <path>      Command receipts JSON output path
   --log-dir <dir>   Directory for command logs, default tmp/arc-command-logs
+  --cwd <path>      Repository where required commands run and relative outputs are written, default current directory
   --help            Show this help
 `;
 }
@@ -26,7 +28,7 @@ function fail(message, details, code = 1) {
 }
 
 function parseArgs(argv) {
-  const options = { plan: null, out: null, logDir: 'tmp/arc-command-logs', help: false };
+  const options = { plan: null, out: null, logDir: 'tmp/arc-command-logs', cwd: null, help: false };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     const next = () => {
@@ -38,6 +40,7 @@ function parseArgs(argv) {
     else if (arg === '--plan') options.plan = next();
     else if (arg === '--out') options.out = next();
     else if (arg === '--log-dir') options.logDir = next();
+    else if (arg === '--cwd') options.cwd = next();
     else fail(`Unknown option: ${arg}`, usage());
   }
   return options;
@@ -52,7 +55,10 @@ async function main() {
   if (!options.plan) fail('Missing --plan.', usage());
   if (!options.out) fail('Missing --out.', usage());
 
-  const planText = await readFile(options.plan, 'utf8');
+  const planPath = resolve(options.plan);
+  if (options.cwd) process.chdir(resolve(options.cwd));
+
+  const planText = await readFile(planPath, 'utf8');
   const parsed = parseMinimalAiplanText(planText);
   if (!parsed.ok) {
     fail('Invalid .aiplan.', parsed.errors.map((error) => `${error.field}: ${error.reason}`).join('\n'));

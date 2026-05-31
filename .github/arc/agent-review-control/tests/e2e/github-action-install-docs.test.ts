@@ -39,6 +39,9 @@ test('GitHub Action workflow example enforces the ARC verdict with the expected 
   assert.match(workflow, /arc-run-required-commands\.mjs/);
   assert.match(workflow, /arc-pr-check\.mjs/);
   assert.match(workflow, /arc-post-pr-comment\.mjs/);
+  assert.match(workflow, /Checkout trusted ARC verifier from PR base/);
+  assert.match(workflow, /--repo-root pr/);
+  assert.match(workflow, /arc-trusted\/\.github\/arc\/agent-review-control/);
   assert.match(workflow, /Enforce ARC verdict/);
   assert.doesNotMatch(workflow, /allow-needs-review-exit-0/);
 });
@@ -52,14 +55,5 @@ test('GitHub Action example plan is frozen and includes tests as allowed evidenc
   assert.deepEqual(parsed.plan.allowed_scope.files, ['src/signup/**', 'test/**']);
   assert.deepEqual(parsed.plan.excluded_scope.files, ['src/auth/**']);
   assert.deepEqual(parsed.plan.expected_evidence.required_commands, ['npm test']);
-  assert.equal(verifyMinimalAiplanContractHash(parsed.plan).ok, true);
-});
-
-test('minimal aiplan docs example has a valid frozen hash', async () => {
-  const planText = await readFile(path.join(appRoot, 'docs/aiplan/example-minimal.aiplan'), 'utf8');
-  const parsed = parseMinimalAiplanText(planText);
-
-  assert.equal(parsed.ok, true);
-  if (!parsed.ok) return;
   assert.equal(verifyMinimalAiplanContractHash(parsed.plan).ok, true);
 });

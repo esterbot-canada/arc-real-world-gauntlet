@@ -14,3 +14,8 @@ test('validateEmail rejects non-email strings', () => {
 test('validateEmail rejects non-strings', () => {
   assert.equal(validateEmail(null), false);
 });
+
+
+test('validateEmail rejects emails with double dots', () => {
+  assert.equal(validateEmail('person..name@example.com'), false);
+});

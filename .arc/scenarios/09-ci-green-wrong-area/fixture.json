@@ -1,0 +1,24 @@
+{
+  "changedFiles": [
+    "src/billing/invoices.mjs",
+    "test/billing.test.mjs",
+    "src/settings/profile.mjs",
+    "test/settings.test.mjs"
+  ],
+  "receipts": [
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "provenance": "trusted_ci",
+      "logPath": ".arc/tmp/scenario-09-command-logs/01-npm-test.log"
+    }
+  ],
+  "diffSource": {
+    "range": "scenario-09-fixture",
+    "trust": "provider_verified",
+    "description": "gauntlet fixture changed files"
+  },
+  "expectedMarkdownIncludes": [
+    "Excluded file touched: src/settings/profile.mjs"
+  ]
+}

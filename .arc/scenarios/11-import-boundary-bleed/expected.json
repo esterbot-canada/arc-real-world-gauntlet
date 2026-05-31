@@ -1,0 +1,5 @@
+{
+  "expectedVerdict": "Needs Review",
+  "expectedReason": "The changed signup helper can stay inside allowed files while importing or re-exporting excluded auth code.",
+  "arcRisk": "import-boundary-bleed"
+}

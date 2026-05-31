@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import { resolveDiffSource } from '../lib/gate/diff-range.ts';
 import { loadChangedFilesForRange } from '../lib/gate/git-diff.ts';
@@ -58,6 +58,94 @@ function parseArgs(argv) {
   return options;
 }
 
+function normalizePath(path) {
+  let normalized = path.replaceAll('\\', '/').trim();
+  while (normalized.startsWith('./')) normalized = normalized.slice(2);
+  while (normalized.startsWith('/')) normalized = normalized.slice(1);
+  return normalized;
+}
+
+function isSafeRepoPath(path) {
+  const normalized = path.replaceAll('\\', '/').trim();
+  if (normalized.length === 0) return false;
+  if (normalized.startsWith('/')) return false;
+  if (normalized.includes('//')) return false;
+  if (normalized.split('/').includes('..')) return false;
+  return true;
+}
+
+function extractLocalImportSpecifiers(source) {
+  const specifiers = [];
+  const patterns = [
+    /\bimport\s+(?:type\s+)?(?:[^'";]+?\s+from\s+)?['"]([^'"]+)['"]/g,
+    /\bexport\s+(?:type\s+)?(?:[^'";]+?\s+from\s+)['"]([^'"]+)['"]/g,
+    /\brequire\(\s*['"]([^'"]+)['"]\s*\)/g,
+  ];
+
+  for (const pattern of patterns) {
+    for (const match of source.matchAll(pattern)) {
+      const specifier = match[1]?.trim();
+      if (specifier?.startsWith('./') || specifier?.startsWith('../')) specifiers.push(specifier);
+    }
+  }
+
+  return [...new Set(specifiers)];
+}
+
+function candidateImportPaths(importer, specifier) {
+  const base = normalizePath(join(dirname(normalizePath(importer)), specifier));
+  const extensions = ['', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.json'];
+  return extensions.flatMap((extension) => {
+    const candidate = `${base}${extension}`;
+    return [candidate, `${candidate}/index.ts`, `${candidate}/index.tsx`, `${candidate}/index.js`, `${candidate}/index.jsx`, `${candidate}/index.mjs`, `${candidate}/index.cjs`];
+  }).map(normalizePath);
+}
+
+async function readTextIfPresent(path) {
+  try {
+    return await readFile(path, 'utf8');
+  } catch {
+    return null;
+  }
+}
+
+async function loadChangedFileTexts(changedFiles) {
+  const texts = {};
+  const queue = changedFiles.map(normalizePath);
+  const seen = new Set();
+
+  while (queue.length > 0) {
+    const file = queue.shift();
+    if (!file || seen.has(file) || !isSafeRepoPath(file)) continue;
+    seen.add(file);
+
+    const text = await readTextIfPresent(file);
+    if (text === null) continue;
+    texts[file] = text;
+
+    if (!changedFiles.map(normalizePath).includes(file)) continue;
+    for (const specifier of extractLocalImportSpecifiers(text)) {
+      for (const candidate of candidateImportPaths(file, specifier)) {
+        if (!seen.has(candidate) && isSafeRepoPath(candidate)) queue.push(candidate);
+      }
+    }
+  }
+
+  return texts;
+}
+
+async function readReceiptsTextOrEmpty(path) {
+  try {
+    return await readFile(path, 'utf8');
+  } catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
+      console.warn(`ARC PR check warning: command receipts file not found at ${path}; continuing with empty receipts so a Trust Brief can still be rendered.`);
+      return '[]';
+    }
+    throw error;
+  }
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
@@ -77,14 +165,15 @@ async function main() {
 
   const [planText, receiptsText, changedFiles] = await Promise.all([
     readFile(options.plan, 'utf8'),
-    readFile(options.receipts, 'utf8'),
+    readReceiptsTextOrEmpty(options.receipts),
     loadChangedFilesForRange(process.cwd(), diffSource.range),
   ]);
+  const changedFileTexts = await loadChangedFileTexts(changedFiles);
 
   const parsedReceipts = parseCommandReceiptsText(receiptsText);
   if (!parsedReceipts.ok) fail('Invalid command receipts file.', parsedReceipts.errors.join('\n'));
 
-  const result = createArcPrCheck({ planText, changedFiles, receipts: parsedReceipts.receipts, diffSource });
+  const result = createArcPrCheck({ planText, changedFiles, changedFileTexts, receipts: parsedReceipts.receipts, diffSource });
   await mkdir(dirname(options.out), { recursive: true });
   await writeFile(options.out, result.markdown, 'utf8');
 

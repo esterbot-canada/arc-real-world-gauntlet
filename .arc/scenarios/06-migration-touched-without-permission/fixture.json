@@ -1,0 +1,23 @@
+{
+  "changedFiles": [
+    "src/settings/profile.mjs",
+    "test/settings.test.mjs",
+    "src/db/migrations/001_init.sql"
+  ],
+  "receipts": [
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "provenance": "trusted_ci",
+      "logPath": ".arc/tmp/scenario-06-command-logs/01-npm-test.log"
+    }
+  ],
+  "diffSource": {
+    "range": "scenario-06-fixture",
+    "trust": "provider_verified",
+    "description": "gauntlet fixture changed files"
+  },
+  "expectedMarkdownIncludes": [
+    "Excluded file touched: src/db/migrations/001_init.sql"
+  ]
+}

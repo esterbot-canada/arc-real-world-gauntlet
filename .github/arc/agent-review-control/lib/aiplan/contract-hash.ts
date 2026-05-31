@@ -36,7 +36,12 @@ export function normalizeMinimalAiplanForHash(plan: MinimalAiplanV1): MinimalAip
     ...plan,
     allowed_scope: { files: [...plan.allowed_scope.files] },
     excluded_scope: { files: [...plan.excluded_scope.files] },
-    expected_evidence: { required_commands: [...plan.expected_evidence.required_commands] },
+    expected_evidence: {
+      required_commands: [...plan.expected_evidence.required_commands],
+      ...(plan.expected_evidence.required_changed_files === undefined
+        ? {}
+        : { required_changed_files: [...plan.expected_evidence.required_changed_files] }),
+    },
     freeze: {
       ...plan.freeze,
       contract_hash: null,

@@ -1,0 +1,12 @@
+{
+  "changedFiles": ["src/settings/profile.mjs"],
+  "receipts": [],
+  "diffSource": {
+    "range": "scenario-03-fixture",
+    "trust": "provider_verified",
+    "description": "gauntlet fixture changed files"
+  },
+  "expectedMarkdownIncludes": [
+    "Missing required command receipt: npm test"
+  ]
+}

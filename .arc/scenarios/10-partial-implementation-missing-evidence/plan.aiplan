@@ -16,8 +16,10 @@ excluded_scope:
 expected_evidence:
   required_commands:
     - "npm test"
+  required_changed_files:
+    - "test/userService.test.mjs"
 
 freeze:
   created_by: "planner"
   frozen_at: "2026-05-25T18:00:00.000Z"
-  contract_hash: "sha256:a31fe8419b7fbd6b01fe2b466928803670787225a329b0eb6be62732047fada9"
+  contract_hash: "sha256:c81e8171d64eb2364c86cbfabb31a686ac9eb52a01dd438a22949db2d89c0b93"

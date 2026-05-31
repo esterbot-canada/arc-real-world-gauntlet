@@ -42,6 +42,24 @@ test('accepts smallest frozen verifier contract', () => {
   }
 });
 
+test('accepts optional required changed-file evidence globs', () => {
+  const result = validateMinimalAiplan({
+    version: '1',
+    kind: 'aiplan',
+    status: 'frozen',
+    allowed_scope: { files: ['src/signup/**', 'test/signup.test.ts'] },
+    excluded_scope: { files: ['src/auth/**'] },
+    expected_evidence: {
+      required_commands: ['npm test -- SignupForm'],
+      required_changed_files: ['test/signup.test.ts'],
+    },
+    freeze: { created_by: 'planner', frozen_at: '2026-05-24T00:00:00Z', contract_hash: 'sha256:abc' },
+  });
+
+  assert.equal(result.ok, true);
+  if (result.ok) assert.deepEqual(result.plan.expected_evidence.required_changed_files, ['test/signup.test.ts']);
+});
+
 test('rejects non-frozen plan', () => {
   const result = validateMinimalAiplan({
     version: '1',
@@ -141,6 +159,14 @@ test('rejects duplicate required commands after trimming', () => {
 
   assert.equal(result.ok, false);
   if (!result.ok) assert.match(result.errors.map((error) => error.reason).join('\n'), /Duplicate/i);
+});
+
+test('rejects unsafe required changed-file evidence globs', () => {
+  for (const glob of ['**', '../test/signup.test.ts', '/tmp/signup.test.ts']) {
+    const result = parseMinimalAiplanText(validPlanText.replace('required_commands:\n    - "npm test -- SignupForm"', `required_commands:\n    - "npm test -- SignupForm"\n  required_changed_files:\n    - "${glob}"`));
+    assert.equal(result.ok, false);
+    if (!result.ok) assert.match(result.errors.map((error) => error.reason).join('\n'), /too broad|Path traversal|Absolute paths/i);
+  }
 });
 
 

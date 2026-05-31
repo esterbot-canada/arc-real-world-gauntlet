@@ -1,5 +1,5 @@
 {
-  "expectedVerdict": "Needs Review",
-  "expectedReason": "The builder will intentionally touch src/db/migrations even though the task is UI-only.",
+  "expectedVerdict": "Blocked",
+  "expectedReason": "The builder will intentionally touch src/db/migrations despite explicit excluded scope.",
   "arcRisk": "migration-change-without-permission"
 }

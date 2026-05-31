@@ -54,3 +54,12 @@ test('GitHub Action example plan is frozen and includes tests as allowed evidenc
   assert.deepEqual(parsed.plan.expected_evidence.required_commands, ['npm test']);
   assert.equal(verifyMinimalAiplanContractHash(parsed.plan).ok, true);
 });
+
+test('minimal aiplan docs example has a valid frozen hash', async () => {
+  const planText = await readFile(path.join(appRoot, 'docs/aiplan/example-minimal.aiplan'), 'utf8');
+  const parsed = parseMinimalAiplanText(planText);
+
+  assert.equal(parsed.ok, true);
+  if (!parsed.ok) return;
+  assert.equal(verifyMinimalAiplanContractHash(parsed.plan).ok, true);
+});

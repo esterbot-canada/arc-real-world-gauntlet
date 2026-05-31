@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "arc:gauntlet": "node scripts/run-arc-gauntlet.mjs"
   },
   "engines": {
     "node": ">=24"

@@ -1,0 +1,14 @@
+{
+  "changedFiles": ["src/signup/validateEmail.mjs", "test/signup.test.mjs"],
+  "receipts": [
+    { "command": "npm test", "exitCode": 0, "provenance": "trusted_ci", "logPath": ".arc/tmp/scenario-07-command-logs/01-npm-test.log" }
+  ],
+  "diffSource": {
+    "range": "scenario-07-fixture",
+    "trust": "provider_verified",
+    "description": "gauntlet fixture changed files"
+  },
+  "expectedMarkdownIncludes": [
+    "Allowed scope glob is too broad for a frozen verifier contract."
+  ]
+}

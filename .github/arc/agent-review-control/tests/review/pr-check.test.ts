@@ -164,3 +164,76 @@ test('needs review when frozen plan defines no required command evidence', () =>
   assert.equal(result.status, 'Needs Review');
   assert.match(result.markdown, /No required command evidence/);
 });
+
+test('needs review when required changed-file evidence is missing', () => {
+  const plan = freezePlanHash(validPlan.replace('required_commands:\n    - "npm test -- SignupForm"', 'required_commands:\n    - "npm test -- SignupForm"\n  required_changed_files:\n    - "test/signup.test.ts"'));
+  const result = createArcPrCheck({
+    planText: plan,
+    changedFiles: ['src/signup/Form.tsx'],
+    receipts: [{ command: 'npm test -- SignupForm', exitCode: 0, provenance: 'trusted_ci' }],
+    diffSource: { range: 'base...head', trust: 'provider_verified', description: 'provider-derived base/head: base...head' },
+  });
+
+  assert.equal(result.status, 'Needs Review');
+  assert.match(result.markdown, /Missing required changed-file evidence: test\/signup\.test\.ts/);
+});
+
+test('passes when required changed-file evidence is present', () => {
+  const plan = freezePlanHash(
+    validPlan
+      .replace('- "src/signup/**"', '- "src/signup/**"\n    - "test/signup.test.ts"')
+      .replace('required_commands:\n    - "npm test -- SignupForm"', 'required_commands:\n    - "npm test -- SignupForm"\n  required_changed_files:\n    - "test/signup.test.ts"'),
+  );
+  const result = createArcPrCheck({
+    planText: plan,
+    changedFiles: ['src/signup/Form.tsx', 'test/signup.test.ts'],
+    receipts: [{ command: 'npm test -- SignupForm', exitCode: 0, provenance: 'trusted_ci' }],
+    diffSource: { range: 'base...head', trust: 'provider_verified', description: 'provider-derived base/head: base...head' },
+  });
+
+  assert.equal(result.status, 'Pass');
+  assert.match(result.markdown, /Required changed-file evidence present: test\/signup\.test\.ts/);
+});
+
+test('needs review when changed file imports excluded scope through a barrel file', () => {
+  const plan = freezePlanHash(
+    validPlan
+      .replace('- "src/signup/**"', '- "src/signup/**"\n    - "test/signup.test.ts"')
+      .replace('required_commands:\n    - "npm test -- SignupForm"', 'required_commands:\n    - "npm test -- SignupForm"\n  required_changed_files:\n    - "test/signup.test.ts"'),
+  );
+  const result = createArcPrCheck({
+    planText: plan,
+    changedFiles: ['test/signup.test.ts'],
+    changedFileTexts: {
+      'test/signup.test.ts': `import { makeAuthSession } from '../src/signup/test-helpers';`,
+      'src/signup/test-helpers.ts': `export { makeAuthSession } from '../auth/session';`,
+    },
+    receipts: [{ command: 'npm test -- SignupForm', exitCode: 0, provenance: 'trusted_ci' }],
+    diffSource: { range: 'base...head', trust: 'provider_verified', description: 'provider-derived base/head: base...head' },
+  });
+
+  assert.equal(result.status, 'Needs Review');
+  assert.match(result.markdown, /Import boundary crossed: test\/signup\.test\.ts -> src\/signup\/test-helpers\.ts -> src\/auth\/session/);
+});
+
+test('deduplicates import-boundary focus when changed files share the same excluded importer', () => {
+  const plan = freezePlanHash(
+    validPlan
+      .replace('- "src/signup/**"', '- "src/signup/**"\n    - "test/signup.test.ts"')
+      .replace('required_commands:\n    - "npm test -- SignupForm"', 'required_commands:\n    - "npm test -- SignupForm"\n  required_changed_files:\n    - "src/signup/test-helpers.ts"'),
+  );
+  const result = createArcPrCheck({
+    planText: plan,
+    changedFiles: ['test/signup.test.ts', 'src/signup/test-helpers.ts'],
+    changedFileTexts: {
+      'test/signup.test.ts': `import { makeAuthSession } from '../src/signup/test-helpers';`,
+      'src/signup/test-helpers.ts': `export { makeAuthSession } from '../auth/session';`,
+    },
+    receipts: [{ command: 'npm test -- SignupForm', exitCode: 0, provenance: 'trusted_ci' }],
+    diffSource: { range: 'base...head', trust: 'provider_verified', description: 'provider-derived base/head: base...head' },
+  });
+
+  assert.equal(result.status, 'Needs Review');
+  assert.equal(result.focusQuestions.filter((question) => question.includes('src/signup/test-helpers.ts')).length, 1);
+  assert.equal((result.markdown.match(/Import boundary crossed:/g) ?? []).length, 1);
+});

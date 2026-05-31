@@ -1,0 +1,18 @@
+{
+  "changedFiles": ["test/signup.test.mjs", "src/signup/test-helpers.mjs"],
+  "changedFileTexts": {
+    "test/signup.test.mjs": "import { createSignupSession } from '../src/signup/test-helpers.mjs';\n",
+    "src/signup/test-helpers.mjs": "export { createSession as createSignupSession } from '../auth/session.mjs';\n"
+  },
+  "receipts": [
+    { "command": "npm test", "exitCode": 0, "provenance": "trusted_ci", "logPath": ".arc/tmp/scenario-11-command-logs/01-npm-test.log" }
+  ],
+  "diffSource": {
+    "range": "scenario-11-fixture",
+    "trust": "provider_verified",
+    "description": "gauntlet fixture changed files"
+  },
+  "expectedMarkdownIncludes": [
+    "Import boundary crossed: test/signup.test.mjs -> src/signup/test-helpers.mjs -> src/auth/session.mjs"
+  ]
+}

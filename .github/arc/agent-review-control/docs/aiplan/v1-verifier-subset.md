@@ -1,11 +1,12 @@
 # ARC V1 Verifier Subset
 
-ARC V1 only verifies path globs and required command receipts. Other fields are planner notes for now.
+ARC V1 only verifies path globs, required command receipts, and required changed-file evidence. Other fields are planner notes for now.
 
 The verifier answers two boring questions:
 
 1. Did this PR touch files outside the frozen allowed scope or inside excluded scope?
 2. Did the required command receipts exist and pass?
+3. Did the PR include any required changed files, such as acceptance tests named in the frozen plan?
 
 It does not judge whether the code is good. CI, tests, static analysis, reviewers, and humans still do that.
 
@@ -28,6 +29,8 @@ excluded_scope:
 expected_evidence:
   required_commands:
     - "npm test -- SignupForm"
+  required_changed_files:
+    - "test/signup.test.ts"
 
 freeze:
   created_by: "planner"

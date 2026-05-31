@@ -4,11 +4,7 @@ export type MinimalAiplanV1 = {
   status: 'frozen';
   allowed_scope: { files: string[] };
   excluded_scope: { files: string[] };
-  expected_evidence: {
-    required_commands: string[];
-    required_changed_files: string[];
-    required_test_patterns: string[];
-  };
+  expected_evidence: { required_commands: string[]; required_changed_files?: string[] };
   freeze: {
     created_by: string;
     frozen_at: string;
@@ -28,7 +24,7 @@ export type MinimalAiplanValidationResult =
 const TOP_LEVEL_FIELDS = new Set(['version', 'kind', 'status', 'allowed_scope', 'excluded_scope', 'expected_evidence', 'freeze']);
 const ALLOWED_SCOPE_FIELDS = new Set(['files']);
 const EXCLUDED_SCOPE_FIELDS = new Set(['files']);
-const EXPECTED_EVIDENCE_FIELDS = new Set(['required_commands', 'required_changed_files', 'required_test_patterns']);
+const EXPECTED_EVIDENCE_FIELDS = new Set(['required_commands', 'required_changed_files']);
 const FREEZE_FIELDS = new Set(['created_by', 'frozen_at', 'contract_hash']);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -102,35 +98,6 @@ function validateCommandArray(field: string, values: string[] | undefined, error
   return normalized;
 }
 
-function unsafeRelativePathReason(path: string): string | null {
-  const value = path.trim();
-  if (value.length === 0) return 'Expected non-empty relative path.';
-  if (value.includes('\\')) return 'Use POSIX-style / path separators.';
-  if (value.startsWith('/')) return 'Absolute paths are not allowed.';
-  if (value.split('/').includes('..')) return 'Path traversal segments are not allowed.';
-  if (value.includes('//')) return 'Empty path segments are not allowed.';
-  if (/[*?\[\]{}]/.test(value)) return 'Glob patterns are not allowed; expected exact relative file paths.';
-  return null;
-}
-
-function validateRequiredChangedFiles(field: string, values: string[] | undefined, errors: MinimalAiplanValidationError[]): string[] {
-  const normalized = normalizedStringArray(values ?? []);
-  if (hasDuplicates(normalized)) errors.push({ field, reason: 'Duplicate required changed files are not allowed.' });
-
-  normalized.forEach((path, index) => {
-    const reason = unsafeRelativePathReason(path);
-    if (reason) errors.push({ field: `${field}[${index}]`, reason });
-  });
-
-  return normalized;
-}
-
-function validateRequiredTestPatterns(field: string, values: string[] | undefined, errors: MinimalAiplanValidationError[]): string[] {
-  const normalized = normalizedStringArray(values ?? []);
-  if (hasDuplicates(normalized)) errors.push({ field, reason: 'Duplicate required test patterns are not allowed.' });
-  return normalized;
-}
-
 function getRecord(root: Record<string, unknown>, field: string): Record<string, unknown> | null {
   const value = root[field];
   return isRecord(value) ? value : null;
@@ -179,12 +146,8 @@ export function validateMinimalAiplan(input: unknown): MinimalAiplanValidationRe
     errors.push({ field: 'expected_evidence.required_commands', reason: 'Expected array of command strings.' });
   }
 
-  if (expectedEvidence?.required_changed_files !== undefined && !stringArray(expectedEvidence.required_changed_files, { requireNonEmpty: false })) {
-    errors.push({ field: 'expected_evidence.required_changed_files', reason: 'Expected array of exact relative file paths.' });
-  }
-
-  if (expectedEvidence?.required_test_patterns !== undefined && !stringArray(expectedEvidence.required_test_patterns, { requireNonEmpty: false })) {
-    errors.push({ field: 'expected_evidence.required_test_patterns', reason: 'Expected array of non-empty test pattern strings.' });
+  if (expectedEvidence?.required_changed_files !== undefined && !stringArray(expectedEvidence.required_changed_files, { requireNonEmpty: true })) {
+    errors.push({ field: 'expected_evidence.required_changed_files', reason: 'Expected non-empty array of file globs when defined.' });
   }
 
   const allowedFiles = allowedScope && stringArray(allowedScope.files, { requireNonEmpty: true })
@@ -196,12 +159,9 @@ export function validateMinimalAiplan(input: unknown): MinimalAiplanValidationRe
   const requiredCommands = expectedEvidence && stringArray(expectedEvidence.required_commands, { requireNonEmpty: false })
     ? validateCommandArray('expected_evidence.required_commands', expectedEvidence.required_commands, errors)
     : [];
-  const requiredChangedFiles = expectedEvidence?.required_changed_files !== undefined && stringArray(expectedEvidence.required_changed_files, { requireNonEmpty: false })
-    ? validateRequiredChangedFiles('expected_evidence.required_changed_files', expectedEvidence.required_changed_files, errors)
-    : [];
-  const requiredTestPatterns = expectedEvidence?.required_test_patterns !== undefined && stringArray(expectedEvidence.required_test_patterns, { requireNonEmpty: false })
-    ? validateRequiredTestPatterns('expected_evidence.required_test_patterns', expectedEvidence.required_test_patterns, errors)
-    : [];
+  const requiredChangedFiles = expectedEvidence && stringArray(expectedEvidence.required_changed_files, { requireNonEmpty: true })
+    ? validateGlobArray('expected_evidence.required_changed_files', expectedEvidence.required_changed_files, { allowGlobalWildcard: false }, errors)
+    : undefined;
 
   if (!freeze) {
     errors.push({ field: 'freeze', reason: 'Expected freeze metadata.' });
@@ -224,8 +184,7 @@ export function validateMinimalAiplan(input: unknown): MinimalAiplanValidationRe
       excluded_scope: { files: excludedFiles },
       expected_evidence: {
         required_commands: requiredCommands,
-        required_changed_files: requiredChangedFiles,
-        required_test_patterns: requiredTestPatterns,
+        ...(requiredChangedFiles === undefined ? {} : { required_changed_files: requiredChangedFiles }),
       },
       freeze: {
         created_by: freeze!.created_by as string,

@@ -5,7 +5,7 @@
 # Do not store runtime evidence, actual touched files, findings, verdicts, or human review decisions here.
 
 # 7-day V1 verifier subset
-# ARC V1 only verifies path globs and required command receipts. Other fields are planner notes for now.
+# ARC V1 only verifies path globs, required command receipts, and required changed-file evidence. Other fields are planner notes for now.
 # The minimal verifier-facing contract shape is:
 #
 # version: "1"
@@ -20,6 +20,8 @@
 # expected_evidence:
 #   required_commands:
 #     - "npm test -- SignupForm"
+#   required_changed_files:
+#     - "test/signup.test.ts"
 # freeze:
 #   created_by: "planner"
 #   frozen_at: "2026-05-24T00:00:00Z"

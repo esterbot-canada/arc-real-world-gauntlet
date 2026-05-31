@@ -39,31 +39,25 @@ test('accepts smallest frozen verifier contract', () => {
     assert.deepEqual(result.plan.allowed_scope.files, ['src/signup/**']);
     assert.deepEqual(result.plan.excluded_scope.files, ['src/auth/**']);
     assert.deepEqual(result.plan.expected_evidence.required_commands, ['npm test -- SignupForm']);
-    assert.deepEqual(result.plan.expected_evidence.required_changed_files, []);
-    assert.deepEqual(result.plan.expected_evidence.required_test_patterns, []);
   }
 });
 
-test('accepts optional acceptance evidence fields', () => {
+test('accepts optional required changed-file evidence globs', () => {
   const result = validateMinimalAiplan({
     version: '1',
     kind: 'aiplan',
     status: 'frozen',
-    allowed_scope: { files: ['src/signup/**'] },
-    excluded_scope: { files: [] },
+    allowed_scope: { files: ['src/signup/**', 'test/signup.test.ts'] },
+    excluded_scope: { files: ['src/auth/**'] },
     expected_evidence: {
       required_commands: ['npm test -- SignupForm'],
-      required_changed_files: ['src/signup/Form.tsx', 'tests/signup.test.ts'],
-      required_test_patterns: ['SignupForm renders', 'creates an account'],
+      required_changed_files: ['test/signup.test.ts'],
     },
     freeze: { created_by: 'planner', frozen_at: '2026-05-24T00:00:00Z', contract_hash: 'sha256:abc' },
   });
 
   assert.equal(result.ok, true);
-  if (result.ok) {
-    assert.deepEqual(result.plan.expected_evidence.required_changed_files, ['src/signup/Form.tsx', 'tests/signup.test.ts']);
-    assert.deepEqual(result.plan.expected_evidence.required_test_patterns, ['SignupForm renders', 'creates an account']);
-  }
+  if (result.ok) assert.deepEqual(result.plan.expected_evidence.required_changed_files, ['test/signup.test.ts']);
 });
 
 test('rejects non-frozen plan', () => {
@@ -167,50 +161,18 @@ test('rejects duplicate required commands after trimming', () => {
   if (!result.ok) assert.match(result.errors.map((error) => error.reason).join('\n'), /Duplicate/i);
 });
 
+test('rejects unsafe required changed-file evidence globs', () => {
+  for (const glob of ['**', '../test/signup.test.ts', '/tmp/signup.test.ts']) {
+    const result = parseMinimalAiplanText(validPlanText.replace('required_commands:\n    - "npm test -- SignupForm"', `required_commands:\n    - "npm test -- SignupForm"\n  required_changed_files:\n    - "${glob}"`));
+    assert.equal(result.ok, false);
+    if (!result.ok) assert.match(result.errors.map((error) => error.reason).join('\n'), /too broad|Path traversal|Absolute paths/i);
+  }
+});
+
 
 test('rejects absolute and traversal-heavy dangerous plan globs', () => {
   for (const glob of ['../**', '/etc/**', 'src/**/../auth/**']) {
     const result = parseMinimalAiplanText(validPlanText.replace('- "src/signup/**"', `- "${glob}"`));
     assert.equal(result.ok, false);
   }
-});
-
-test('rejects unsafe required changed files and invalid test patterns', () => {
-  for (const path of ['src/signup/**', '/tmp/file.ts', '../file.ts', 'src//file.ts']) {
-    const result = parseMinimalAiplanText(validPlanText.replace(
-      'required_commands:\n    - "npm test -- SignupForm"',
-      `required_commands:\n    - "npm test -- SignupForm"\n  required_changed_files:\n    - "${path}"`,
-    ));
-    assert.equal(result.ok, false);
-    if (!result.ok) assert.match(result.errors.map((error) => `${error.field}: ${error.reason}`).join('\n'), /required_changed_files/);
-  }
-
-  const backslashPath = validateMinimalAiplan({
-    version: '1',
-    kind: 'aiplan',
-    status: 'frozen',
-    allowed_scope: { files: ['src/signup/**'] },
-    excluded_scope: { files: [] },
-    expected_evidence: { required_commands: [], required_changed_files: ['src\\file.ts'] },
-    freeze: { created_by: 'planner', frozen_at: '2026-05-24T00:00:00Z', contract_hash: 'sha256:abc' },
-  });
-  assert.equal(backslashPath.ok, false);
-  if (!backslashPath.ok) assert.match(backslashPath.errors.map((error) => `${error.field}: ${error.reason}`).join('\n'), /required_changed_files/);
-
-  const invalidPattern = parseMinimalAiplanText(validPlanText.replace(
-    'required_commands:\n    - "npm test -- SignupForm"',
-    'required_commands:\n    - "npm test -- SignupForm"\n  required_test_patterns:\n    - ""',
-  ));
-  assert.equal(invalidPattern.ok, false);
-  if (!invalidPattern.ok) assert.match(invalidPattern.errors.map((error) => error.field).join('\n'), /required_test_patterns/);
-});
-
-test('rejects unknown expected evidence fields', () => {
-  const result = parseMinimalAiplanText(validPlanText.replace(
-    'required_commands:\n    - "npm test -- SignupForm"',
-    'required_commands:\n    - "npm test -- SignupForm"\n  screenshots:\n    - "screenshot.png"',
-  ));
-
-  assert.equal(result.ok, false);
-  if (!result.ok) assert.match(result.errors.map((error) => error.field).join('\n'), /expected_evidence\.screenshots/);
 });

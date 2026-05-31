@@ -6,6 +6,7 @@ allowed_scope:
   files:
     - "src/billing/**"
     - "test/billing.test.mjs"
+    - "package.json"
 
 excluded_scope:
   files:

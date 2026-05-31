@@ -1,5 +1,5 @@
 export function formatInvoiceLabel(invoice) {
-  return `Invoice ${invoice.id}`;
+  return `Customer Invoice ${invoice.id}`;
 }
 
 export function calculateTotal(items) {

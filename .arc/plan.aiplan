@@ -4,15 +4,14 @@ status: "frozen"
 
 allowed_scope:
   files:
-    - "src/billing/**"
-    - "test/billing.test.mjs"
+    - "src/settings/**"
+    - "test/settings.test.mjs"
 
 excluded_scope:
   files:
-    - "package.json"
-    - "package-lock.json"
-    - "src/auth/**"
     - "src/db/**"
+    - "src/auth/**"
+    - "src/billing/**"
 
 expected_evidence:
   required_commands:
@@ -21,4 +20,4 @@ expected_evidence:
 freeze:
   created_by: "planner"
   frozen_at: "2026-05-25T18:00:00.000Z"
-  contract_hash: "sha256:c5e054628fdf7fa005096a9f52fec51ee6fb7d23df39149fb1a335dcefbca6fa"
+  contract_hash: "sha256:10f6d6981f5b98a37d6f7a5f4466fa021a529b6cad0e8f35869a288ad2b664cc"

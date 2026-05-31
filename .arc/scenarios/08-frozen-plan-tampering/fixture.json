@@ -1,0 +1,23 @@
+{
+  "changedFiles": [
+    "src/billing/invoices.mjs",
+    "test/billing.test.mjs",
+    ".arc/plan.aiplan"
+  ],
+  "receipts": [
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "provenance": "trusted_ci",
+      "logPath": ".arc/tmp/scenario-08-command-logs/01-npm-test.log"
+    }
+  ],
+  "diffSource": {
+    "range": "scenario-08-fixture",
+    "trust": "provider_verified",
+    "description": "gauntlet fixture changed files"
+  },
+  "expectedMarkdownIncludes": [
+    "Excluded file touched: .arc/plan.aiplan"
+  ]
+}

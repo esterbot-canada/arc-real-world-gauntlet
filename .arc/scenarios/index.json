@@ -38,7 +38,7 @@
     {
       "id": "05-dependency-change-without-permission",
       "title": "Format billing invoice labels without new dependencies",
-      "expectedVerdict": "Needs Review",
+      "expectedVerdict": "Blocked",
       "status": "plan-created",
       "issueUrl": "https://github.com/esterbot-canada/arc-real-world-gauntlet/issues/5",
       "issueNumber": 5
@@ -46,7 +46,7 @@
     {
       "id": "06-migration-touched-without-permission",
       "title": "Add UI-only profile preference without database changes",
-      "expectedVerdict": "Needs Review",
+      "expectedVerdict": "Blocked",
       "status": "plan-created",
       "issueUrl": "https://github.com/esterbot-canada/arc-real-world-gauntlet/issues/6",
       "issueNumber": 6

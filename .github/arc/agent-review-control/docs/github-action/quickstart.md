@@ -151,11 +151,11 @@ node .github/arc/agent-review-control/scripts/arc-pr-check.mjs \
   --allow-needs-review-exit-0
 ```
 
-Manual ranges are caller-provided evidence, so they cannot produce the same confidence as the GitHub PR workflow.
+Manual ranges are caller-provided evidence, so they cannot produce the same confidence as the GitHub PR workflow. In GitHub pull_request events, ARC loads `.arc/plan.aiplan` from the provider-verified base SHA, not from the PR head, so implementation PRs cannot rewrite the contract to fit their changes.
 
 ## Troubleshooting
 
 - **ARC says files are outside scope:** add the intended paths to `allowed_scope.files`, then recompute the hash before implementation.
 - **ARC says required command is missing:** make sure the command appears exactly in `expected_evidence.required_commands` and can run in GitHub Actions.
-- **ARC blocks after plan edits:** expected. The frozen plan hash changed; recompute and commit the new hash before implementation starts.
+- **ARC blocks after plan edits in an implementation PR:** expected. ARC treats contract+implementation changes in the same PR as self-attestation. Freeze or update `.arc/plan.aiplan` before the implementation PR, then run implementation against that base-branch contract.
 - **GitHub still blocks after ARC passes:** check other required reviews, CodeQL, rulesets, conversations, or branch protection rules.

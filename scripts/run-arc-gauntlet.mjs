@@ -61,6 +61,9 @@ function assertFixture(value, scenarioId) {
   if (value.expectedMarkdownIncludes !== undefined && (!Array.isArray(value.expectedMarkdownIncludes) || value.expectedMarkdownIncludes.some((item) => typeof item !== 'string'))) {
     throw new Error(`${scenarioId}: fixture.expectedMarkdownIncludes must be an array of strings when provided.`);
   }
+  if (value.trustedPlanSource !== undefined && (typeof value.trustedPlanSource !== 'object' || Array.isArray(value.trustedPlanSource) || value.trustedPlanSource === null)) {
+    throw new Error(`${scenarioId}: fixture.trustedPlanSource must be an object when provided.`);
+  }
 }
 
 async function main() {
@@ -94,6 +97,7 @@ async function main() {
       changedFileTexts: fixture.changedFileTexts,
       receipts: fixture.receipts,
       diffSource: fixture.diffSource ?? { range: `${scenarioId}-fixture`, trust: 'provider_verified', description: 'gauntlet fixture changed files' },
+      trustedPlanSource: fixture.trustedPlanSource,
     });
 
     const outPath = resolve(outDir, `${scenarioId}.md`);

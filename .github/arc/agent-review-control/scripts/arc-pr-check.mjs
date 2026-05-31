@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { dirname, join } from 'node:path';
 
 import { resolveDiffSource } from '../lib/gate/diff-range.ts';
 import { loadChangedFilesForRange } from '../lib/gate/git-diff.ts';
 import { parseCommandReceiptsText } from '../lib/review/command-receipts.ts';
 import { createArcPrCheck } from '../lib/review/pr-check.ts';
+
+const execFileAsync = promisify(execFile);
 
 function usage() {
   return `ARC PR check
@@ -14,7 +18,7 @@ Usage:
   npm run arc:pr-check -- --plan <path> --base <sha> --head <sha> --receipts <path> --out <path>
 
 Options:
-  --plan <path>       Frozen minimal .aiplan file
+  --plan <path>       Frozen minimal .aiplan file. In GitHub PRs ARC loads this from the provider-verified base SHA, not PR head.
   --base <sha/ref>    Provider-derived PR base SHA/ref
   --head <sha/ref>    Provider-derived PR head SHA/ref
   --range <range>     Manual local git diff range, requires --allow-manual-range
@@ -134,6 +138,21 @@ async function loadChangedFileTexts(changedFiles) {
   return texts;
 }
 
+async function readTrustedPlanText(path, diffSource) {
+  const normalized = normalizePath(path);
+  if (diffSource.trust !== 'provider_verified') return readFile(path, 'utf8');
+  if (!diffSource.baseRef) throw new Error('Provider-verified diff source did not include a base ref for trusted plan loading.');
+  if (!isSafeRepoPath(normalized)) throw new Error(`Unsafe --plan path: ${path}`);
+
+  try {
+    const { stdout } = await execFileAsync('git', ['show', `${diffSource.baseRef}:${normalized}`], { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 });
+    return stdout;
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(`Could not load trusted base-branch .aiplan from ${diffSource.baseRef}:${normalized}. ${detail}`);
+  }
+}
+
 async function readReceiptsTextOrEmpty(path) {
   try {
     return await readFile(path, 'utf8');
@@ -164,7 +183,7 @@ async function main() {
   }
 
   const [planText, receiptsText, changedFiles] = await Promise.all([
-    readFile(options.plan, 'utf8'),
+    readTrustedPlanText(options.plan, diffSource),
     readReceiptsTextOrEmpty(options.receipts),
     loadChangedFilesForRange(process.cwd(), diffSource.range),
   ]);
@@ -173,7 +192,22 @@ async function main() {
   const parsedReceipts = parseCommandReceiptsText(receiptsText);
   if (!parsedReceipts.ok) fail('Invalid command receipts file.', parsedReceipts.errors.join('\n'));
 
-  const result = createArcPrCheck({ planText, changedFiles, changedFileTexts, receipts: parsedReceipts.receipts, diffSource });
+  const normalizedPlanPath = normalizePath(options.plan);
+  const result = createArcPrCheck({
+    planText,
+    changedFiles,
+    changedFileTexts,
+    receipts: parsedReceipts.receipts,
+    diffSource,
+    trustedPlanSource:
+      diffSource.trust === 'provider_verified' && diffSource.baseRef
+        ? {
+            path: normalizedPlanPath,
+            ref: diffSource.baseRef,
+            changedInPr: changedFiles.map(normalizePath).includes(normalizedPlanPath),
+          }
+        : undefined,
+  });
   await mkdir(dirname(options.out), { recursive: true });
   await writeFile(options.out, result.markdown, 'utf8');
 

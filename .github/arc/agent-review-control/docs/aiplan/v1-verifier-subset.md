@@ -65,7 +65,7 @@ Expected workflow behavior:
 
 For local demos/report-only jobs, `arc-pr-check.mjs` supports `--allow-needs-review-exit-0`, but the default GitHub workflow does not use it.
 
-The sample workflow at `.github/workflows/arc-pr-check.yml` builds a trusted CI command receipt, runs ARC against the provider PR base/head event, and posts the Trust Brief back to the pull request.
+The sample workflow at `.github/workflows/arc-pr-check.yml` builds a trusted CI command receipt, loads the frozen `.aiplan` from the provider-verified PR base SHA, runs ARC against the provider PR base/head event, and posts the Trust Brief back to the pull request. If the implementation PR changes the plan file, ARC blocks it as self-attested contract drift.
 
 The receipt step runs `npm run arc:run-required-commands -- --plan .arc/plan.aiplan --out tmp/arc-command-receipts.json`, so required CI commands come from the frozen contract itself. The workflow lets that step continue long enough to generate receipts and a Trust Brief, then fails the job afterward if any required command failed.
 

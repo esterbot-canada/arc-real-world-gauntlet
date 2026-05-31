@@ -90,6 +90,14 @@
       "status": "plan-created",
       "issueUrl": null,
       "issueNumber": 11
+    },
+    {
+      "id": "12-self-attested-plan-rewrite",
+      "title": "Block PR-head plan rewrite that widens scope",
+      "expectedVerdict": "Blocked",
+      "status": "plan-created",
+      "issueUrl": null,
+      "issueNumber": 12
     }
   ]
 }

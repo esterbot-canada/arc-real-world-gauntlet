@@ -7,12 +7,19 @@ import type { ArcDiffSource } from '../gate/diff-range.ts';
 import { pathMatchesAnyGlob } from '../aiplan/path-globs.ts';
 import { checkImportBoundary } from './import-boundary.ts';
 
+export type ArcTrustedPlanSource = {
+  path: string;
+  ref: string;
+  changedInPr: boolean;
+};
+
 export type ArcPrCheckInput = {
   planText: string;
   changedFiles: string[];
   changedFileTexts?: Record<string, string>;
   receipts: CommandReceipt[];
   diffSource?: ArcDiffSource;
+  trustedPlanSource?: ArcTrustedPlanSource;
 };
 
 export type ArcPrCheckResult = {
@@ -67,8 +74,16 @@ export function createArcPrCheck(input: ArcPrCheckInput): ArcPrCheckResult {
     `Allowed scope: ${parsedPlan.plan.allowed_scope.files.join(', ')}`,
     `Excluded scope: ${parsedPlan.plan.excluded_scope.files.length > 0 ? parsedPlan.plan.excluded_scope.files.join(', ') : 'none'}`,
     `Changed files: ${input.changedFiles.length > 0 ? input.changedFiles.join(', ') : 'none'}`,
+    input.trustedPlanSource
+      ? `Contract loaded from trusted base ref: ${input.trustedPlanSource.ref}:${input.trustedPlanSource.path}`
+      : 'Contract loaded from working tree/caller input. Treat contract provenance as untrusted unless this is a local demo.',
     `Frozen contract hash verified: ${contractHash.actualHash}`,
   ];
+
+  if (input.trustedPlanSource?.changedInPr) {
+    focusQuestions.push(`Why did \`${input.trustedPlanSource.path}\` change in this implementation PR? Impact: changing the frozen contract and implementation together is self-attestation, not proof the agent stayed inside the original assignment.`);
+    receipts.push(`Frozen contract file changed in PR: ${input.trustedPlanSource.path}`);
+  }
 
   if (!input.diffSource || input.diffSource.trust !== 'provider_verified') {
     focusQuestions.push('Was the diff range derived from CI/provider base and head SHAs? Impact: caller-provided ranges can hide commits from ARC.');
@@ -147,15 +162,20 @@ export function createArcPrCheck(input: ArcPrCheckInput): ArcPrCheckResult {
     }
   }
 
-  const status: TrustBriefStatus = scope.invalidChangedFiles.length > 0 || scope.excludedTouched.length > 0 ? 'Blocked' : focusQuestions.length > 0 ? 'Needs Review' : 'Pass';
+  const contractChangedInPr = input.trustedPlanSource?.changedInPr === true;
+  const status: TrustBriefStatus = scope.invalidChangedFiles.length > 0 || scope.excludedTouched.length > 0 || contractChangedInPr ? 'Blocked' : focusQuestions.length > 0 ? 'Needs Review' : 'Pass';
   const summaryReason =
     status === 'Blocked'
-      ? scope.invalidChangedFiles.length > 0
-        ? 'This PR included invalid changed paths, so ARC cannot safely compare the diff to the frozen .aiplan.'
-        : 'This PR crossed an explicit excluded scope boundary in the frozen .aiplan.'
+      ? contractChangedInPr
+        ? 'This PR changed the frozen .aiplan while also being checked against it, so ARC refuses self-attested contract changes.'
+        : scope.invalidChangedFiles.length > 0
+          ? 'This PR included invalid changed paths, so ARC cannot safely compare the diff to the frozen .aiplan.'
+          : 'This PR crossed an explicit excluded scope boundary in the frozen .aiplan.'
       : status === 'Needs Review'
         ? 'This PR has scope or required-evidence issues that should be inspected before normal review.'
-        : 'Changed files stayed inside approved scope and required checks passed.';
+        : input.trustedPlanSource
+          ? 'Changed files stayed inside the base-branch frozen contract and required checks passed.'
+          : 'Changed files stayed inside approved scope and required checks passed.';
 
   const markdown = renderTrustBriefMarkdown({ status, summaryReason, focusQuestions, receipts });
   return { status, summaryReason, focusQuestions, receipts, markdown };

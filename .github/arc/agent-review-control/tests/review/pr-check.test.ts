@@ -78,6 +78,21 @@ test('blocks excluded scope touches', () => {
   assert.match(result.markdown, /excluded scope/);
 });
 
+test('blocks implementation PRs that change the trusted contract file', () => {
+  const result = createArcPrCheck({
+    planText: validPlan,
+    changedFiles: ['.arc/plan.aiplan', 'src/signup/Form.tsx'],
+    receipts: [{ command: 'npm test -- SignupForm', exitCode: 0, provenance: 'trusted_ci' }],
+    diffSource: { range: 'base...head', trust: 'provider_verified', description: 'provider-derived base/head: base...head', baseRef: 'base', headRef: 'head' },
+    trustedPlanSource: { path: '.arc/plan.aiplan', ref: 'base', changedInPr: true },
+  });
+
+  assert.equal(result.status, 'Blocked');
+  assert.match(result.markdown, /refuses self-attested contract changes/);
+  assert.match(result.markdown, /Frozen contract file changed in PR: \.arc\/plan\.aiplan/);
+  assert.match(result.markdown, /Contract loaded from trusted base ref: base:\.arc\/plan\.aiplan/);
+});
+
 test('blocks invalid plan before trusting diff evidence', () => {
   const result = createArcPrCheck({
     planText: validPlan.replace('status: "frozen"', 'status: "draft"'),

@@ -6,6 +6,8 @@ export type ArcDiffSource = {
   range: string;
   trust: ArcDiffSourceTrust;
   description: string;
+  baseRef?: string;
+  headRef?: string;
 };
 
 export type ResolveDiffSourceInput = {
@@ -64,7 +66,7 @@ export function resolveDiffSource(input: ResolveDiffSourceInput): ArcDiffSource 
       if (!looksLikeFullSha(base) || !looksLikeFullSha(head)) {
         throw new Error('GitHub pull_request base/head must be immutable full commit SHAs.');
       }
-      return { range: `${base}...${head}`, trust: 'provider_verified', description: `GitHub pull_request base/head: ${base}...${head}` };
+      return { range: `${base}...${head}`, trust: 'provider_verified', description: `GitHub pull_request base/head: ${base}...${head}`, baseRef: base, headRef: head };
     }
   }
 
@@ -72,7 +74,7 @@ export function resolveDiffSource(input: ResolveDiffSourceInput): ArcDiffSource 
     if (!nonEmpty(input.base) || !nonEmpty(input.head)) throw new Error('Both --base and --head are required when either is provided.');
     const base = safeRef(input.base, '--base');
     const head = safeRef(input.head, '--head');
-    return { range: `${base}...${head}`, trust: 'caller_provided', description: `caller-provided base/head: ${base}...${head}` };
+    return { range: `${base}...${head}`, trust: 'caller_provided', description: `caller-provided base/head: ${base}...${head}`, baseRef: base, headRef: head };
   }
 
   if (nonEmpty(input.range)) {

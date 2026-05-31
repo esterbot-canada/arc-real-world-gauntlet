@@ -27,20 +27,33 @@ function sha256(value: string): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
-export type MinimalAiplanHashable = Omit<MinimalAiplanV1, 'freeze'> & {
+export type MinimalAiplanHashable = Omit<MinimalAiplanV1, 'expected_evidence' | 'freeze'> & {
+  expected_evidence: {
+    required_commands: string[];
+    required_changed_files?: string[];
+    required_test_patterns?: string[];
+  };
   freeze: Omit<MinimalAiplanV1['freeze'], 'contract_hash'> & { contract_hash: null };
 };
 
 export function normalizeMinimalAiplanForHash(plan: MinimalAiplanV1): MinimalAiplanHashable {
+  const expectedEvidence: MinimalAiplanHashable['expected_evidence'] = {
+    required_commands: [...plan.expected_evidence.required_commands],
+  };
+
+  if (plan.expected_evidence.required_changed_files.length > 0) {
+    expectedEvidence.required_changed_files = [...plan.expected_evidence.required_changed_files];
+  }
+
+  if (plan.expected_evidence.required_test_patterns.length > 0) {
+    expectedEvidence.required_test_patterns = [...plan.expected_evidence.required_test_patterns];
+  }
+
   return {
     ...plan,
     allowed_scope: { files: [...plan.allowed_scope.files] },
     excluded_scope: { files: [...plan.excluded_scope.files] },
-    expected_evidence: {
-      required_commands: [...plan.expected_evidence.required_commands],
-      required_changed_files: [...plan.expected_evidence.required_changed_files],
-      required_test_patterns: [...plan.expected_evidence.required_test_patterns],
-    },
+    expected_evidence: expectedEvidence,
     freeze: {
       ...plan.freeze,
       contract_hash: null,

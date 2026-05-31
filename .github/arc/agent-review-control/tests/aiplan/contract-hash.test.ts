@@ -20,7 +20,7 @@ expected_evidence:
 freeze:
   created_by: "planner"
   frozen_at: "2026-05-24T00:00:00Z"
-  contract_hash: "sha256:f85f3ec09af7ad1495e94e71e30bc1cd6ccdbbceed8ffd8a136819a6eb1b7680"
+  contract_hash: "sha256:34d6cc4e383cac5fb3d6b2a3efb74aa0d35d146674407f6efb40399d62b217ed"
 `;
 
 test('computes stable hash with contract_hash treated as null', () => {
@@ -28,7 +28,7 @@ test('computes stable hash with contract_hash treated as null', () => {
   assert.equal(parsed.ok, true);
   if (!parsed.ok) return;
 
-  assert.equal(computeMinimalAiplanContractHash(parsed.plan), 'sha256:f85f3ec09af7ad1495e94e71e30bc1cd6ccdbbceed8ffd8a136819a6eb1b7680');
+  assert.equal(computeMinimalAiplanContractHash(parsed.plan), 'sha256:34d6cc4e383cac5fb3d6b2a3efb74aa0d35d146674407f6efb40399d62b217ed');
 });
 
 test('verifies unchanged frozen plan hash', () => {
@@ -47,6 +47,30 @@ test('rejects tampered plan content after freeze', () => {
   const result = verifyMinimalAiplanContractHash(parsed.plan);
   assert.equal(result.ok, false);
   if (!result.ok) assert.match(result.reason, /does not match/i);
+});
+
+
+test('preserves legacy frozen hash when optional acceptance evidence fields are omitted', () => {
+  const parsed = parseMinimalAiplanText(planText);
+  assert.equal(parsed.ok, true);
+  if (!parsed.ok) return;
+
+  const result = verifyMinimalAiplanContractHash(parsed.plan);
+  assert.equal(result.ok, true);
+  assert.equal(result.actualHash, 'sha256:34d6cc4e383cac5fb3d6b2a3efb74aa0d35d146674407f6efb40399d62b217ed');
+});
+
+test('explicit empty optional acceptance evidence fields preserve legacy hash', () => {
+  const planTextWithExplicitEmptyOptionalEvidence = planText.replace(
+    '  required_commands:\n    - "npm test -- SignupForm"',
+    '  required_commands:\n    - "npm test -- SignupForm"\n  required_changed_files: []\n  required_test_patterns: []',
+  );
+  const parsed = parseMinimalAiplanText(planTextWithExplicitEmptyOptionalEvidence);
+  assert.equal(parsed.ok, true);
+  if (!parsed.ok) return;
+
+  assert.equal(computeMinimalAiplanContractHash(parsed.plan), 'sha256:34d6cc4e383cac5fb3d6b2a3efb74aa0d35d146674407f6efb40399d62b217ed');
+  assert.equal(verifyMinimalAiplanContractHash(parsed.plan).ok, true);
 });
 
 test('hash changes when optional acceptance evidence fields change', () => {

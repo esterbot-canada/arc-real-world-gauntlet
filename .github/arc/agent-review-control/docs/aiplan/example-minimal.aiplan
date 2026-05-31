@@ -18,4 +18,4 @@ expected_evidence:
 freeze:
   created_by: "planner"
   frozen_at: "2026-05-24T00:00:00Z"
-  contract_hash: "sha256:bdfcbb37590373351dbbb9a1e9cc5aafabf906a79093b1b2cb65dd3d53710671"
+  contract_hash: "sha256:1db3a7e4784478c98943a7477e03f5f1c96d06c579597a94231fa334a65d73ea"

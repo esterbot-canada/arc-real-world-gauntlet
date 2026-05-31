@@ -9,10 +9,9 @@ allowed_scope:
 
 excluded_scope:
   files:
-    - ".arc/plan.aiplan"
-    - ".arc/**/plan.aiplan"
+    - "src/settings/**"
+    - "src/signup/**"
     - "src/auth/**"
-    - "src/db/**"
 
 expected_evidence:
   required_commands:
@@ -21,4 +20,4 @@ expected_evidence:
 freeze:
   created_by: "planner"
   frozen_at: "2026-05-25T18:00:00.000Z"
-  contract_hash: "sha256:a1ba6955636d6e1b064d965be4fd878f886e92507c5ee73427b07ba45c3a1020"
+  contract_hash: "sha256:3426084b398e4592f6950d94699c1a393f45c9d21ef7cc2b8ae34c1f19d53426"

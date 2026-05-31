@@ -17,33 +17,42 @@ jobs:
       - name: Checkout PR head with base history
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+          path: pr
+
+      - name: Checkout trusted ARC verifier from PR base
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          path: arc-trusted
 
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: .github/arc/agent-review-control/package-lock.json
+          cache-dependency-path: arc-trusted/.github/arc/agent-review-control/package-lock.json
 
       - name: Install ARC verifier dependencies
-        run: npm ci --prefix .github/arc/agent-review-control
+        run: npm ci --prefix arc-trusted/.github/arc/agent-review-control
 
       - name: Build trusted command receipts
         id: arc-receipts
         continue-on-error: true
-        run: node .github/arc/agent-review-control/scripts/arc-run-required-commands.mjs --plan .arc/plan.aiplan --out .arc/tmp/arc-command-receipts.json --log-dir .arc/tmp/arc-command-logs
+        run: node arc-trusted/.github/arc/agent-review-control/scripts/arc-run-required-commands.mjs --plan arc-trusted/.arc/plan.aiplan --cwd pr --out .arc/tmp/arc-command-receipts.json --log-dir .arc/tmp/arc-command-logs
 
       - name: Run ARC Trust Brief
         id: arc-check
         continue-on-error: true
-        run: node .github/arc/agent-review-control/scripts/arc-pr-check.mjs --plan .arc/plan.aiplan --receipts .arc/tmp/arc-command-receipts.json --out .arc/tmp/arc-trust-brief.md
+        run: node arc-trusted/.github/arc/agent-review-control/scripts/arc-pr-check.mjs --repo-root pr --plan .arc/plan.aiplan --receipts pr/.arc/tmp/arc-command-receipts.json --out pr/.arc/tmp/arc-trust-brief.md
 
       - name: Add Trust Brief to job summary
         if: always()
         run: |
-          if [ -f .arc/tmp/arc-trust-brief.md ]; then
-            cat .arc/tmp/arc-trust-brief.md >> "$GITHUB_STEP_SUMMARY"
+          if [ -f pr/.arc/tmp/arc-trust-brief.md ]; then
+            cat pr/.arc/tmp/arc-trust-brief.md >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Post ARC Trust Brief PR comment
@@ -51,8 +60,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ -f .arc/tmp/arc-trust-brief.md ]; then
-            node .github/arc/agent-review-control/scripts/arc-post-pr-comment.mjs --body .arc/tmp/arc-trust-brief.md
+          if [ -f pr/.arc/tmp/arc-trust-brief.md ]; then
+            node arc-trusted/.github/arc/agent-review-control/scripts/arc-post-pr-comment.mjs --body pr/.arc/tmp/arc-trust-brief.md
           fi
 
       - name: Enforce ARC verdict

@@ -12,7 +12,7 @@ ARC checks whether the PR stayed inside the frozen `.aiplan` and produced truste
 .github/arc/agent-review-control/
 ```
 
-V1 vendors the verifier into the repo so the proof works without a hosted service or Marketplace Action.
+V1 vendors the verifier into the repo so the proof works without a hosted service or Marketplace Action. The PR workflow checks out the PR under review separately from a trusted base-SHA checkout, then runs ARC verifier code from the base checkout so a PR cannot rewrite its own checker and fake a Pass.
 
 ## 1. Copy ARC into your repo
 
@@ -151,11 +151,12 @@ node .github/arc/agent-review-control/scripts/arc-pr-check.mjs \
   --allow-needs-review-exit-0
 ```
 
-Manual ranges are caller-provided evidence, so they cannot produce the same confidence as the GitHub PR workflow. In GitHub pull_request events, ARC loads `.arc/plan.aiplan` from the provider-verified base SHA, not from the PR head, so implementation PRs cannot rewrite the contract to fit their changes.
+Manual ranges are caller-provided evidence, so they cannot produce the same confidence as the GitHub PR workflow. In GitHub pull_request events, ARC loads `.arc/plan.aiplan` and ARC verifier code from the provider-verified base SHA, not from the PR head, so implementation PRs cannot rewrite the contract or checker to fit their changes.
 
 ## Troubleshooting
 
 - **ARC says files are outside scope:** add the intended paths to `allowed_scope.files`, then recompute the hash before implementation.
 - **ARC says required command is missing:** make sure the command appears exactly in `expected_evidence.required_commands` and can run in GitHub Actions.
 - **ARC blocks after plan edits in an implementation PR:** expected. ARC treats contract+implementation changes in the same PR as self-attestation. Freeze or update `.arc/plan.aiplan` before the implementation PR, then run implementation against that base-branch contract.
+- **ARC blocks after verifier/workflow edits in a normal implementation PR:** expected. The verifier runs from the base checkout; changes to `.github/arc/**` or workflow files should be handled as explicit ARC-infra work with a frozen plan that allows them.
 - **GitHub still blocks after ARC passes:** check other required reviews, CodeQL, rulesets, conversations, or branch protection rules.

@@ -2,7 +2,7 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 import { resolveDiffSource } from '../lib/gate/diff-range.ts';
 import { loadChangedFilesForRange } from '../lib/gate/git-diff.ts';
@@ -24,6 +24,7 @@ Options:
   --range <range>     Manual local git diff range, requires --allow-manual-range
   --allow-manual-range Allow caller-provided --range for local demos; result cannot Pass
   --allow-needs-review-exit-0 Allow Needs Review to exit 0 for local demos/report-only jobs
+  --repo-root <path>  Repository under review, default current directory. Use when ARC verifier code is loaded from a trusted checkout.
   --receipts <path>   JSON command receipts file
   --out <path>        Markdown output path, default arc-trust-brief.md
   --help              Show this help
@@ -37,7 +38,7 @@ function fail(message, details, code = 1) {
 }
 
 function parseArgs(argv) {
-  const options = { plan: null, base: null, head: null, range: null, allowManualRange: false, allowNeedsReviewExit0: false, receipts: null, out: 'arc-trust-brief.md', help: false };
+  const options = { plan: null, base: null, head: null, range: null, allowManualRange: false, allowNeedsReviewExit0: false, repoRoot: null, receipts: null, out: 'arc-trust-brief.md', help: false };
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -54,6 +55,7 @@ function parseArgs(argv) {
     else if (arg === '--range') options.range = next();
     else if (arg === '--allow-manual-range') options.allowManualRange = true;
     else if (arg === '--allow-needs-review-exit-0') options.allowNeedsReviewExit0 = true;
+    else if (arg === '--repo-root') options.repoRoot = next();
     else if (arg === '--receipts') options.receipts = next();
     else if (arg === '--out') options.out = next();
     else fail(`Unknown option: ${arg}`, usage());
@@ -174,6 +176,7 @@ async function main() {
 
   if (!options.plan) fail('Missing --plan.', usage());
   if (!options.receipts) fail('Missing --receipts.', usage());
+  if (options.repoRoot) process.chdir(resolve(options.repoRoot));
 
   let diffSource;
   try {

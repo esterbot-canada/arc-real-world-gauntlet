@@ -107,6 +107,23 @@ async function runArcWorkflow(repo: string, planPath: string, base: string, name
   return { checkRun, brief };
 }
 
+async function runArcWorkflowFromTrustedVerifier(repo: string, planPath: string, base: string, name: string) {
+  const eventPath = await writePrEvent(repo, base, name);
+  const receiptsPath = path.join(repo, `.arc/${name}.receipts.json`);
+  const briefPath = path.join(repo, `.arc/${name}.trust-brief.md`);
+  const planArg = path.relative(repo, planPath);
+
+  const receiptRun = run(process.execPath, [path.join(appRoot, 'scripts/arc-run-required-commands.mjs'), '--plan', planPath, '--cwd', repo, '--out', receiptsPath, '--log-dir', `.arc/tmp/arc-workflow/${name}/logs`], { cwd: appRoot });
+  assert.equal(receiptRun.status, 0, receiptRun.stderr);
+
+  const checkRun = run(process.execPath, [path.join(appRoot, 'scripts/arc-pr-check.mjs'), '--repo-root', repo, '--plan', planArg, '--receipts', receiptsPath, '--out', briefPath], {
+    cwd: appRoot,
+    env: { GITHUB_EVENT_PATH: eventPath },
+  });
+  const brief = await readFile(briefPath, 'utf8');
+  return { checkRun, brief };
+}
+
 async function runArcWorkflowAfterReceiptFailure(repo: string, planPath: string, base: string, name: string) {
   const eventPath = await writePrEvent(repo, base, name);
   const receiptsPath = path.join(repo, `.arc/${name}.missing-receipts.json`);
@@ -171,6 +188,31 @@ test('ARC workflow blocks self-attested PR-head plan rewrites that widen scope',
   assert.match(brief, /Frozen contract file changed in PR: \.arc\/plan\.aiplan/);
   assert.match(brief, /Contract loaded from trusted base ref:/);
   assert.match(brief, /Excluded file touched: src\/auth\/session\.ts/);
+});
+
+test('trusted verifier invocation is not fooled by PR-head verifier rewrites', async () => {
+  const { repo, planPath, base } = await initWorkflowRepo();
+  await mkdir(path.join(repo, '.github/arc/agent-review-control/scripts'), { recursive: true });
+  await writeFile(path.join(repo, '.github/arc/agent-review-control/scripts/arc-pr-check.mjs'), `#!/usr/bin/env node
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname } from 'node:path';
+const outIndex = process.argv.indexOf('--out');
+const out = outIndex === -1 ? 'arc-trust-brief.md' : process.argv[outIndex + 1];
+await mkdir(dirname(out), { recursive: true });
+await writeFile(out, '## ARC Trust Brief: Pass\\n\\nMalicious PR-head verifier lied.\\n');
+console.log('ARC Trust Brief: Pass');
+`);
+  await writeFile(path.join(repo, 'src/auth/session.ts'), 'export const auth = 2;\n');
+  mustRun('git', ['add', '.'], repo);
+  mustRun('git', ['commit', '-q', '-m', 'rewrite verifier and touch auth'], repo);
+
+  const { checkRun, brief } = await runArcWorkflowFromTrustedVerifier(repo, planPath, base, 'trusted-verifier-root');
+
+  assert.equal(checkRun.status, 1);
+  assert.match(brief, /## ARC Trust Brief: Blocked/);
+  assert.match(brief, /Excluded file touched: src\/auth\/session\.ts/);
+  assert.match(brief, /Outside allowed scope: \.github\/arc\/agent-review-control\/scripts\/arc-pr-check\.mjs/);
+  assert.doesNotMatch(brief, /Malicious PR-head verifier lied/);
 });
 
 test('ARC workflow still renders a Trust Brief when the frozen plan hash was tampered and receipts are missing', async () => {

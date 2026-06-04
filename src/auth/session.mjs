@@ -14,3 +14,5 @@ export function isSessionExpired(session, now = new Date()) {
   const created = new Date(session.createdAt);
   return now.getTime() - created.getTime() > session.expiresInMinutes * 60_000;
 }
+
+export const SESSION_POLICY_VERSION = "2026-05";

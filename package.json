@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "arc:gauntlet": "node scripts/run-arc-gauntlet.mjs"
+    "arc:gauntlet": "uv run --project arc python arc/scripts/run_gauntlet.py"
   },
   "engines": {
     "node": ">=24"

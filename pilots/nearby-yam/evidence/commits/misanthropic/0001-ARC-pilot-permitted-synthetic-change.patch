@@ -1,0 +1,17 @@
+From 3fdf1d95400a6eab0879990189ae0970aca8167a Mon Sep 17 00:00:00 2001
+From: ARC Pilot <arc-pilot@local.invalid>
+Date: Wed, 10 Jun 2026 19:57:52 +0200
+Subject: [PATCH] ARC pilot: permitted synthetic change
+
+---
+ arc-pilot/normal-change.md | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 arc-pilot/normal-change.md
+
+diff --git a/arc-pilot/normal-change.md b/arc-pilot/normal-change.md
+new file mode 100644
+index 0000000..be188c1
+--- /dev/null
++++ b/arc-pilot/normal-change.md
+@@ -0,0 +1 @@
++Synthetic permitted change for the ARC local pilot.

@@ -1,0 +1,17 @@
+From 00ebfb5c2978baf21f7454e9ba125bc545017628 Mon Sep 17 00:00:00 2001
+From: ARC Pilot <arc-pilot@local.invalid>
+Date: Wed, 10 Jun 2026 19:57:53 +0200
+Subject: [PATCH] ARC pilot: protected hooks change
+
+---
+ hooks/arc-pilot-probe | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 hooks/arc-pilot-probe
+
+diff --git a/hooks/arc-pilot-probe b/hooks/arc-pilot-probe
+new file mode 100644
+index 0000000..1af887b
+--- /dev/null
++++ b/hooks/arc-pilot-probe
+@@ -0,0 +1 @@
++Synthetic protected-path change for the ARC local pilot.

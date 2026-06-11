@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "status": "frozen",
+  "allowed_scope": {
+    "files": ["arc-pilot/**"]
+  },
+  "excluded_scope": {
+    "files": [
+      "souls/generated/*/signing_key.hex",
+      "souls/archived/*/signing_key.hex",
+      "souls/generated/*/agent_id.txt",
+      "souls/archived/*/agent_id.txt"
+    ]
+  },
+  "expected_evidence": {
+    "required_commands": []
+  },
+  "approved_exceptions": []
+}

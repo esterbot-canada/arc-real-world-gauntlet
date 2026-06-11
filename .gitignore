@@ -6,3 +6,7 @@ npm-debug.log*
 !.env.example
 .arc/tmp/
 .arc/generated/
+.pytest_cache/
+__pycache__/
+*.pyc
+.venv/

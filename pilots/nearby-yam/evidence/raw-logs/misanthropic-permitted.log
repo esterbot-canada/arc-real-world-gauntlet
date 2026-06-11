@@ -1,0 +1,6 @@
+
+> agent-review-control@0.1.0 arc:pilot
+> node scripts/arc-pilot.mjs check --repo /tmp/arc-nearby-yam-pilot/misanthropic --base c285ea8e605f69f59b4b331d962871e989a02c9b --head 3fdf1d95400a6eab0879990189ae0970aca8167a --plan /tmp/arc-nearby-yam-pilot/contracts/misanthropic.aiplan --receipts /tmp/arc-nearby-yam-pilot/contracts/receipts.json --out /tmp/arc-nearby-yam-pilot/results-rerun-2026-06-11/misanthropic-permitted.md
+
+ARC Trust Brief: Needs Review
+Wrote /tmp/arc-nearby-yam-pilot/results-rerun-2026-06-11/misanthropic-permitted.md

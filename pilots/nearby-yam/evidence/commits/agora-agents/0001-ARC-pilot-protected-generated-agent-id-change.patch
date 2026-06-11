@@ -1,0 +1,17 @@
+From 831c3149cf890dbb931b5962f6edec3c3a113cea Mon Sep 17 00:00:00 2001
+From: ARC Pilot <arc-pilot@local.invalid>
+Date: Wed, 10 Jun 2026 19:57:53 +0200
+Subject: [PATCH] ARC pilot: protected generated agent id change
+
+---
+ souls/generated/arc-pilot-probe/agent_id.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 souls/generated/arc-pilot-probe/agent_id.txt
+
+diff --git a/souls/generated/arc-pilot-probe/agent_id.txt b/souls/generated/arc-pilot-probe/agent_id.txt
+new file mode 100644
+index 00000000..2bb04d1a
+--- /dev/null
++++ b/souls/generated/arc-pilot-probe/agent_id.txt
+@@ -0,0 +1 @@
++synthetic-pilot-agent

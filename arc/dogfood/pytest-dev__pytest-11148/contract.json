@@ -1,0 +1,18 @@
+{
+  "allowed_scope": {
+    "files": [
+      "src/_pytest/pathlib.py"
+    ]
+  },
+  "approved_exceptions": [],
+  "excluded_scope": {
+    "files": []
+  },
+  "expected_evidence": {
+    "required_commands": [
+      "bash verification.sh"
+    ]
+  },
+  "schema_version": 1,
+  "status": "frozen"
+}

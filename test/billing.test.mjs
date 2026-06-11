@@ -4,7 +4,7 @@ import test from 'node:test';
 import { calculateTotal, formatInvoiceLabel } from '../src/billing/invoices.mjs';
 
 test('formatInvoiceLabel renders stable invoice labels', () => {
-  assert.equal(formatInvoiceLabel({ id: 'INV-1001' }), 'Invoice INV-1001');
+  assert.equal(formatInvoiceLabel({ id: 'INV-1001' }), 'Customer Invoice INV-1001');
 });
 
 test('calculateTotal sums item prices in cents', () => {

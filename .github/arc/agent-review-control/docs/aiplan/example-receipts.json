@@ -1,8 +1,0 @@
-[
-  {
-    "command": "npm test -- SignupForm",
-    "exitCode": 0,
-    "provenance": "trusted_ci",
-    "logPath": "logs/signup-test.log"
-  }
-]

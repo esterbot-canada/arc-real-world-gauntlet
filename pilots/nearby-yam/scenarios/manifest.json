@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "date": "2026-06-11",
+  "pilot_type": "synthetic_local_path_boundary",
+  "scenarios": [
+    {
+      "id": "misanthropic-permitted",
+      "repository": "mdegans/misanthropic",
+      "base_sha": "c285ea8e605f69f59b4b331d962871e989a02c9b",
+      "head_sha": "3fdf1d95400a6eab0879990189ae0970aca8167a",
+      "changed_file": "arc-pilot/normal-change.md",
+      "expected_verdict": "Needs Review",
+      "actual_verdict": "Needs Review",
+      "contract": "../contracts/misanthropic.aiplan",
+      "trust_brief": "../evidence/trust-briefs/misanthropic-permitted.md",
+      "raw_log": "../evidence/raw-logs/misanthropic-permitted.log",
+      "patch": "../evidence/commits/misanthropic/0001-ARC-pilot-permitted-synthetic-change.patch"
+    },
+    {
+      "id": "misanthropic-blocked-hooks",
+      "repository": "mdegans/misanthropic",
+      "base_sha": "c285ea8e605f69f59b4b331d962871e989a02c9b",
+      "head_sha": "00ebfb5c2978baf21f7454e9ba125bc545017628",
+      "changed_file": "hooks/arc-pilot-probe",
+      "expected_verdict": "Blocked",
+      "actual_verdict": "Blocked",
+      "contract": "../contracts/misanthropic.aiplan",
+      "trust_brief": "../evidence/trust-briefs/misanthropic-blocked-hooks.md",
+      "raw_log": "../evidence/raw-logs/misanthropic-blocked-hooks.log",
+      "patch": "../evidence/commits/misanthropic/0001-ARC-pilot-protected-hooks-change.patch"
+    },
+    {
+      "id": "agora-permitted",
+      "repository": "mdegans/agora-agents",
+      "base_sha": "cb3f266907a45d11d07ec3906425ec541e095c1c",
+      "head_sha": "3ff3d2c9ee2be095c11678d116e65add61c9e8b7",
+      "changed_file": "arc-pilot/normal-change.md",
+      "expected_verdict": "Needs Review",
+      "actual_verdict": "Needs Review",
+      "contract": "../contracts/agora-agents.aiplan",
+      "trust_brief": "../evidence/trust-briefs/agora-permitted.md",
+      "raw_log": "../evidence/raw-logs/agora-permitted.log",
+      "patch": "../evidence/commits/agora-agents/0001-ARC-pilot-permitted-synthetic-change.patch"
+    },
+    {
+      "id": "agora-blocked-generated-key",
+      "repository": "mdegans/agora-agents",
+      "base_sha": "cb3f266907a45d11d07ec3906425ec541e095c1c",
+      "head_sha": "f75c169f9e03d5844ad769bbdd56f1dff2f16db0",
+      "changed_file": "souls/generated/arc-pilot-probe/signing_key.hex",
+      "expected_verdict": "Blocked",
+      "actual_verdict": "Blocked",
+      "contract": "../contracts/agora-agents.aiplan",
+      "trust_brief": "../evidence/trust-briefs/agora-blocked-generated-key.md",
+      "raw_log": "../evidence/raw-logs/agora-blocked-generated-key.log",
+      "patch": "../evidence/commits/agora-agents/0001-ARC-pilot-protected-generated-signing-key-change.patch"
+    },
+    {
+      "id": "agora-blocked-archived-key",
+      "repository": "mdegans/agora-agents",
+      "base_sha": "cb3f266907a45d11d07ec3906425ec541e095c1c",
+      "head_sha": "68075d01ca07d47f902d29ed0d9803358c590717",
+      "changed_file": "souls/archived/arc-pilot-probe/signing_key.hex",
+      "expected_verdict": "Blocked",
+      "actual_verdict": "Blocked",
+      "contract": "../contracts/agora-agents.aiplan",
+      "trust_brief": "../evidence/trust-briefs/agora-blocked-archived-key.md",
+      "raw_log": "../evidence/raw-logs/agora-blocked-archived-key.log",
+      "patch": "../evidence/commits/agora-agents/0001-ARC-pilot-protected-archived-signing-key-change.patch"
+    },
+    {
+      "id": "agora-blocked-generated-id",
+      "repository": "mdegans/agora-agents",
+      "base_sha": "cb3f266907a45d11d07ec3906425ec541e095c1c",
+      "head_sha": "831c3149cf890dbb931b5962f6edec3c3a113cea",
+      "changed_file": "souls/generated/arc-pilot-probe/agent_id.txt",
+      "expected_verdict": "Blocked",
+      "actual_verdict": "Blocked",
+      "contract": "../contracts/agora-agents.aiplan",
+      "trust_brief": "../evidence/trust-briefs/agora-blocked-generated-id.md",
+      "raw_log": "../evidence/raw-logs/agora-blocked-generated-id.log",
+      "patch": "../evidence/commits/agora-agents/0001-ARC-pilot-protected-generated-agent-id-change.patch"
+    },
+    {
+      "id": "agora-blocked-archived-id",
+      "repository": "mdegans/agora-agents",
+      "base_sha": "cb3f266907a45d11d07ec3906425ec541e095c1c",
+      "head_sha": "20716ed0d853705da1e3150397b829a0c0f917c1",
+      "changed_file": "souls/archived/arc-pilot-probe/agent_id.txt",
+      "expected_verdict": "Blocked",
+      "actual_verdict": "Blocked",
+      "contract": "../contracts/agora-agents.aiplan",
+      "trust_brief": "../evidence/trust-briefs/agora-blocked-archived-id.md",
+      "raw_log": "../evidence/raw-logs/agora-blocked-archived-id.log",
+      "patch": "../evidence/commits/agora-agents/0001-ARC-pilot-protected-archived-agent-id-change.patch"
+    }
+  ]
+}

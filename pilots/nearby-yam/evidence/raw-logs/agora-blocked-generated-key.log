@@ -1,0 +1,6 @@
+
+> agent-review-control@0.1.0 arc:pilot
+> node scripts/arc-pilot.mjs check --repo /tmp/arc-nearby-yam-pilot/agora-agents --base cb3f266907a45d11d07ec3906425ec541e095c1c --head f75c169f9e03d5844ad769bbdd56f1dff2f16db0 --plan /tmp/arc-nearby-yam-pilot/contracts/agora-agents.aiplan --receipts /tmp/arc-nearby-yam-pilot/contracts/receipts.json --out /tmp/arc-nearby-yam-pilot/results-rerun-2026-06-11/agora-blocked-generated-key.md
+
+ARC Trust Brief: Blocked
+Wrote /tmp/arc-nearby-yam-pilot/results-rerun-2026-06-11/agora-blocked-generated-key.md

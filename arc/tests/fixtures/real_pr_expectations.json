@@ -1,0 +1,61 @@
+[
+  {
+    "name": "n8n-27309",
+    "changed_files": [
+      "packages/nodes-base/credentials/OpenAiApi.credentials.ts",
+      "packages/@n8n/nodes-langchain/nodes/agents/Agent/test/integration/agent-v3.workflow.test.ts",
+      "packages/@n8n/nodes-langchain/nodes/vendors/OpenAi/transport/index.ts"
+    ],
+    "additions": 675,
+    "deletions": 21,
+    "checks_conclusion": "success",
+    "diff": "+ typeOptions: { password: true }\n+ options.agentOptions = { ca: normalizePem(credentials.ca), cert: normalizePem(credentials.cert), key: normalizePem(credentials.key), passphrase: credentials.passphrase }\n",
+    "must_include": [
+      "credential_tls_security_change",
+      "large_diff"
+    ],
+    "must_not_include": [
+      "agent_instruction_context"
+    ]
+  },
+  {
+    "name": "n8n-30578",
+    "changed_files": [
+      "package.json",
+      "packages/@n8n/instance-ai/package.json",
+      "pnpm-lock.yaml",
+      "pnpm-workspace.yaml"
+    ],
+    "additions": 184,
+    "deletions": 715,
+    "checks_conclusion": "success",
+    "diff": "-    \"vm2\": \"3.9.19\"\n+    \"@n8n/vm2\": \"3.9.26\"\n-    \"protobufjs\": \"7.2.4\"\n+    \"protobufjs\": \"7.5.4\"\n+  '@n8n/vm2@3.9.26':\n+    integrity: sha512-example\n",
+    "must_include": [
+      "supply_chain_security_change",
+      "large_diff"
+    ],
+    "must_not_include": [
+      "credential_tls_security_change",
+      "agent_instruction_context"
+    ]
+  },
+  {
+    "name": "appwrite-12269-auth-session-expiry",
+    "changed_files": [
+      "app/init/resources.php"
+    ],
+    "additions": 6,
+    "deletions": 1,
+    "checks_conclusion": "success",
+    "diff": "-            if (empty($user->find('$id', $jwtSessionId, 'sessions'))) { // Match JWT to active token\n+            $jwtSession = $user->find('$id', $jwtSessionId, 'sessions');\n+                if ($session->isSet('expire') && DatabaseDateTime::formatTz(DatabaseDateTime::format(new \\DateTime($session->getAttribute('expire')))) < DatabaseDateTime::formatTz(DatabaseDateTime::now())) {\n+                    $user = new User([]);\n+                }\n",
+    "must_include": [
+      "auth_permission_change",
+      "no_tests_changed"
+    ],
+    "must_not_include": [
+      "supply_chain_security_change",
+      "credential_tls_security_change",
+      "agent_instruction_context"
+    ]
+  }
+]

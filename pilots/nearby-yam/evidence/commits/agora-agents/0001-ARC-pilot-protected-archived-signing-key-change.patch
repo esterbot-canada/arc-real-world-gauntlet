@@ -1,0 +1,17 @@
+From 68075d01ca07d47f902d29ed0d9803358c590717 Mon Sep 17 00:00:00 2001
+From: ARC Pilot <arc-pilot@local.invalid>
+Date: Wed, 10 Jun 2026 19:57:53 +0200
+Subject: [PATCH] ARC pilot: protected archived signing key change
+
+---
+ souls/archived/arc-pilot-probe/signing_key.hex | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 souls/archived/arc-pilot-probe/signing_key.hex
+
+diff --git a/souls/archived/arc-pilot-probe/signing_key.hex b/souls/archived/arc-pilot-probe/signing_key.hex
+new file mode 100644
+index 00000000..07b592ca
+--- /dev/null
++++ b/souls/archived/arc-pilot-probe/signing_key.hex
+@@ -0,0 +1 @@
++synthetic-pilot-key

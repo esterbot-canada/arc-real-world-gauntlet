@@ -1,59 +1,54 @@
-# ARC Real-World Gauntlet
+# ARC: Contract + Evidence + Verdict
 
-This repository is a controlled learning lab for ARC: Agent Review Contracts for AI-generated pull requests.
+ARC checks whether an AI coding agent stayed inside a frozen assignment and
+produced the required evidence.
 
-It is intentionally small, but shaped like a real SaaS app so scope boundaries matter:
+CI asks whether code passes. ARC asks whether the agent changed what it was
+allowed to change and whether its validation claims are backed by evidence.
 
-- signup validation
-- auth/session logic
-- billing invoice helpers
-- profile/settings helpers
-- API service layer
-- database migration area
-- fast Node.js tests
+ARC does **not** prove code correctness, maintainability, security, or merge
+safety. A human still reviews the implementation.
 
-The purpose is not to build a production app. The purpose is to create realistic GitHub issues, freeze `.aiplan` contracts, let builder agents implement PRs, and observe whether ARC returns the right Trust Brief verdict.
+## Start Here
 
-## Proof command
+For the real-repository scope pilot prepared for Nearby_Yam:
 
-Run the full ARC proof suite locally:
+- [Pilot overview](pilots/nearby-yam/README.md)
+- [Exact method](pilots/nearby-yam/METHOD.md)
+- [Limitations](pilots/nearby-yam/LIMITATIONS.md)
+- [Seven scenario records](pilots/nearby-yam/scenarios/manifest.json)
+- [Generated Trust Briefs](pilots/nearby-yam/evidence/trust-briefs)
+- [Raw command logs](pilots/nearby-yam/evidence/raw-logs)
+- [Reviewable commit patches](pilots/nearby-yam/evidence/commits)
 
-```bash
-npm run arc:gauntlet
-```
+The pilot is intentionally described as what it was: seven synthetic local
+commits against two public repository snapshots. It was not a live GitHub
+installation or a set of real AI-generated pull requests.
 
-The runner loads every scenario with a `fixture.json`, runs ARC's deterministic PR checker against the frozen `.aiplan`, and fails if the Trust Brief verdict or required proof text does not match `expected.json`.
+## Run the Repository
 
-It writes generated Trust Briefs to:
+Requirements:
 
-```text
-.arc/tmp/gauntlet/<scenario-id>.md
-```
-
-Run the baseline app tests separately:
+- Node.js 24+
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/)
 
 ```bash
 npm test
+npm run arc:gauntlet
+uv run --project arc --extra dev pytest
 ```
 
-## Scenario matrix
+`npm run arc:gauntlet` runs 11 deterministic good/bad fixtures and writes the
+generated Trust Briefs to `.arc/tmp/gauntlet/`.
 
-| Scenario | Expected | What ARC is proving |
-| --- | --- | --- |
-| `01-clean-signup-pass` | Pass | In-scope signup/test changes with trusted `npm test` receipts can pass. |
-| `02-excluded-auth-drift` | Blocked | A PR that touches explicit excluded auth scope is blocked. |
-| `03-missing-required-tests` | Needs Review | A PR missing required command evidence cannot pass. |
-| `04-agent-reported-receipt-only` | Needs Review | Agent-reported command claims are not trusted CI/provider evidence. |
-| `05-dependency-change-without-permission` | Blocked | Dependency/package file drift is blocked when package files are explicit excluded scope. |
-| `06-migration-touched-without-permission` | Blocked | DB migration drift is blocked when `src/db/**` is explicit excluded scope. |
-| `07-broad-weak-plan` | Blocked | A broad wildcard-only frozen plan is rejected before ARC trusts PR evidence. |
-| `08-frozen-plan-tampering` | Blocked | A PR that changes frozen plan artifacts crosses the contract boundary. |
-| `09-ci-green-wrong-area` | Blocked | Passing tests do not excuse changes in an explicitly excluded area. |
-| `10-partial-implementation-missing-evidence` | Needs Review | Passing `npm test` is not enough when required changed-file evidence is missing. |
-| `11-import-boundary-bleed` | Needs Review | Changed allowed files cannot quietly import/re-export excluded scope without review. |
+## Repository Map
 
-## ARC principle
+- `arc/`: current Python verifier and tests
+- `.arc/scenarios/`: adversarial gauntlet fixtures
+- `pilots/nearby-yam/`: complete public pilot packet
+- `src/` and `test/`: small sample application used by the gauntlet
 
-CI checks whether code passes. ARC checks whether the agent stayed inside the approved assignment and produced the evidence required by the frozen contract.
-
-ARC does not prove the code is correct, safe, or ready to merge. It produces a short Trust Brief so a human reviewer can focus on the exact contract/evidence gaps.
+The previous copied dashboard, API, database, and ingestion application was
+removed. It was unrelated to the narrow verifier and made this review
+repository harder to understand.

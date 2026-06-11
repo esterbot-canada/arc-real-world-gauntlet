@@ -1,0 +1,15 @@
+{
+  "name": "nearby-yam-arc-pilot-reproducer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "arc:pilot": "node scripts/arc-pilot.mjs"
+  },
+  "dependencies": {
+    "yaml": "2.9.0"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

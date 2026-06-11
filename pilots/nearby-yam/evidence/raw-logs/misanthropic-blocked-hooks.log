@@ -1,0 +1,6 @@
+
+> agent-review-control@0.1.0 arc:pilot
+> node scripts/arc-pilot.mjs check --repo /tmp/arc-nearby-yam-pilot/misanthropic --base c285ea8e605f69f59b4b331d962871e989a02c9b --head 00ebfb5c2978baf21f7454e9ba125bc545017628 --plan /tmp/arc-nearby-yam-pilot/contracts/misanthropic.aiplan --receipts /tmp/arc-nearby-yam-pilot/contracts/receipts.json --out /tmp/arc-nearby-yam-pilot/results-rerun-2026-06-11/misanthropic-blocked-hooks.md
+
+ARC Trust Brief: Blocked
+Wrote /tmp/arc-nearby-yam-pilot/results-rerun-2026-06-11/misanthropic-blocked-hooks.md

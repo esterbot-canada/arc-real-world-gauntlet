@@ -1,0 +1,19 @@
+version: "1"
+kind: "aiplan"
+status: "frozen"
+
+allowed_scope:
+  files:
+    - "arc-pilot/**"
+
+excluded_scope:
+  files:
+    - "hooks/**"
+
+expected_evidence:
+  required_commands: []
+
+freeze:
+  created_by: "ARC pilot operator from Nearby_Yam contract"
+  frozen_at: "2026-06-10T17:34:00Z"
+  contract_hash: "sha256:d5e23e080425a4aa960e84aa5e4ea385180f41c4dcc449bcce693a1779930c40"

@@ -1,5 +1,6 @@
 import json
 
+from click.utils import strip_ansi
 from typer.testing import CliRunner
 
 from agent_work_evidence.cli import app
@@ -96,7 +97,9 @@ def test_pr_command_requires_contract_and_rules_together():
     result = runner.invoke(app, ["pr", "owner/repo", "123", "--contract", "contract.json"])
 
     assert result.exit_code != 0
-    assert "--contract and --rules must be supplied together" in result.output
+    assert "--contract and --rules must be supplied together" in strip_ansi(
+        result.output
+    )
 
 
 def test_receipt_out_requires_explicit_command_verification():
@@ -108,7 +111,9 @@ def test_receipt_out_requires_explicit_command_verification():
     )
 
     assert result.exit_code != 0
-    assert "--receipt-out requires --verify-required-commands" in result.output
+    assert "--receipt-out requires --verify-required-commands" in strip_ansi(
+        result.output
+    )
 
 
 def test_contract_evaluation_blocks_malformed_config(tmp_path):

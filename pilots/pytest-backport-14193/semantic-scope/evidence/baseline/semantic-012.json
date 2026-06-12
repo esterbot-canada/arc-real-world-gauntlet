@@ -1,0 +1,15 @@
+{
+  "changed_files": [
+    "src/_pytest/_io/pprint.py",
+    "testing/test_assertion.py"
+  ],
+  "command": "pytest testing/io/test_saferepr.py testing/test_assertion.py",
+  "duration_ms": 27081,
+  "exit_code": 0,
+  "head_sha": "d70c4e5bf44ebcd6f824c313bd846ad2671d0b65",
+  "output_sha256": "86b1b7f8e9983be112e6a3b5dd538517fb9ac1851a73baf48dc972aaf1e49e97",
+  "passed": true,
+  "patch_sha256": "34c760fee4cee9c9c371877c232c764e6b3aaff1d2899ac1244a0c34ca65bf36",
+  "scenario_id": "semantic-012",
+  "schema_version": 1
+}

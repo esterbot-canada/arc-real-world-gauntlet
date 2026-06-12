@@ -4,7 +4,8 @@
   "patch": "../../patches/semantic-011.patch",
   "changed_files": [
     "src/_pytest/_io/saferepr.py",
-    "testing/io/test_saferepr.py"
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
   ],
   "contract_items": ["OUT-001"],
   "expected_baseline": "pass"

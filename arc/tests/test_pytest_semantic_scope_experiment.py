@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -96,3 +97,31 @@ def test_scenarios_are_label_blind_and_inside_frozen_files() -> None:
         assert set(scenario["changed_files"]) <= allowed
         assert scenario["contract_items"]
         assert set(scenario["contract_items"]) <= contract_ids
+
+
+def test_all_patch_fixtures_match_definitions_and_pass_baseline() -> None:
+    contract = _load_json(CONTRACT_PATH)
+    allowed = set(contract["allowed_files"])
+    labels = _load_json(SCENARIOS_ROOT / "labels.json")["labels"]
+
+    for scenario in _definitions():
+        scenario_id = scenario["id"]
+        patch_path = EXPERIMENT_ROOT / "patches" / f"{scenario_id}.patch"
+        receipt_path = (
+            EXPERIMENT_ROOT / "evidence" / "baseline" / f"{scenario_id}.json"
+        )
+        patch = patch_path.read_text(encoding="utf-8")
+        receipt = _load_json(receipt_path)
+        patch_paths = re.findall(r"^diff --git a/(.+?) b/(.+?)$", patch, re.MULTILINE)
+        changed_files = [right for left, right in patch_paths if left == right]
+
+        assert changed_files == scenario["changed_files"]
+        assert set(changed_files) <= allowed
+        assert labels[scenario_id] not in patch
+        assert receipt["scenario_id"] == scenario_id
+        assert receipt["command"] == contract["required_command"]
+        assert receipt["passed"] is True
+        assert receipt["exit_code"] == 0
+        assert receipt["changed_files"] == scenario["changed_files"]
+        assert len(receipt["output_sha256"]) == 64
+        assert len(receipt["patch_sha256"]) == 64

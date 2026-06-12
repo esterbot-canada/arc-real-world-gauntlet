@@ -1,0 +1,71 @@
+diff --git a/src/_pytest/_io/saferepr.py b/src/_pytest/_io/saferepr.py
+index cee70e332f9802a5963bfed8149ac997e5b30de2..3c4f1aa648f12245f02a3a9a40a850e530495516 100644
+--- a/src/_pytest/_io/saferepr.py
++++ b/src/_pytest/_io/saferepr.py
+@@ -1,5 +1,6 @@
+ from __future__ import annotations
+ 
++from itertools import islice
+ import pprint
+ import reprlib
+ 
+@@ -79,6 +80,25 @@ class SafeRepr(reprlib.Repr):
+             s = _ellipsize(s, self.maxsize)
+         return s
+ 
++    def repr_dict(self, x: dict[object, object], level: int) -> str:
++        """Represent a dict while preserving its insertion order."""
++        fillvalue = "..."
++        n = len(x)
++        if n == 0:
++            return "{}"
++        if level <= 0:
++            return "{" + fillvalue + "}"
++        newlevel = level - 1
++        repr1 = self.repr1
++        pieces = []
++        for key in islice(x, self.maxdict):
++            keyrepr = repr1(key, newlevel)
++            valrepr = repr1(x[key], newlevel)
++            pieces.append(f"{keyrepr}: {valrepr}")
++        if n > self.maxdict:
++            pieces.append(fillvalue)
++        return "{" + ", ".join(pieces) + "}"
++
+ 
+ def safeformat(obj: object) -> str:
+     """Return a pretty printed string for the given object.
+diff --git a/testing/io/test_saferepr.py b/testing/io/test_saferepr.py
+index 075d40cdf44ba251f15532eb366dbfedd7730315..c6891a1db3f75dbe5539f45a1c539b1be25b2c6d 100644
+--- a/testing/io/test_saferepr.py
++++ b/testing/io/test_saferepr.py
+@@ -2,6 +2,7 @@
+ from __future__ import annotations
+ 
+ from _pytest._io.saferepr import DEFAULT_REPR_MAX_SIZE
++from _pytest._io.saferepr import SafeRepr
+ from _pytest._io.saferepr import saferepr
+ from _pytest._io.saferepr import saferepr_unlimited
+ import pytest
+@@ -192,3 +193,8 @@ def test_saferepr_unlimited_exc():
+     assert saferepr_unlimited(A()).startswith(
+         "<[ValueError(42) raised in repr()] A object at 0x"
+     )
++
++
++def test_semantic_safe_dict_order() -> None:
++    value = {"b": 2, "a": 1}
++    assert SafeRepr(maxsize=None).repr(value) == "{'b': 2, 'a': 1}"
+diff --git a/testing/test_assertion.py b/testing/test_assertion.py
+index 5179b13b0e9cf243b6078a9711e780d5d7a309cd..f527a38a47c6ff2206d5befe6bd5b137ba950a7a 100644
+--- a/testing/test_assertion.py
++++ b/testing/test_assertion.py
+@@ -129,7 +129,7 @@ class TestImportHookInstallation:
+             [
+                 ">       r.assertoutcome(passed=1)",
+                 "E       AssertionError: ([[][]], [[][]], [[]<TestReport *>[]])*",
+-                "E       assert {'failed': 1,... 'skipped': 0} == {'failed': 0,... 'skipped': 0}",
++                "E       assert {'passed': 0,..., 'failed': 1} == {'passed': 1,..., 'failed': 0}",
+                 "E         Omitting 1 identical items, use -vv to show",
+                 "E         Differing items:",
+                 "E         Use -v to get more diff",

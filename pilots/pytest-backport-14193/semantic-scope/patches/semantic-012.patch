@@ -1,0 +1,47 @@
+diff --git a/src/_pytest/_io/pprint.py b/src/_pytest/_io/pprint.py
+index 28f069092061928a1c06aaba94b6e8ba4f03075f..ec41b449ddfefcfff816b6512dad854617c59226 100644
+--- a/src/_pytest/_io/pprint.py
++++ b/src/_pytest/_io/pprint.py
+@@ -162,7 +162,7 @@ class PrettyPrinter:
+     ) -> None:
+         write = stream.write
+         write("{")
+-        items = sorted(object.items(), key=_safe_tuple)
++        items = object.items()
+         self._format_dict_items(items, stream, indent, allowance, context, level)
+         write("}")
+ 
+@@ -608,7 +608,7 @@ class PrettyPrinter:
+             components: list[str] = []
+             append = components.append
+             level += 1
+-            for k, v in sorted(object.items(), key=_safe_tuple):
++            for k, v in object.items():
+                 krepr = self._safe_repr(k, context, maxlevels, level)
+                 vrepr = self._safe_repr(v, context, maxlevels, level)
+                 append(f"{krepr}: {vrepr}")
+diff --git a/testing/test_assertion.py b/testing/test_assertion.py
+index 5179b13b0e9cf243b6078a9711e780d5d7a309cd..e7b7562b9fa930d53dfab39f20c0a7440fce4ccf 100644
+--- a/testing/test_assertion.py
++++ b/testing/test_assertion.py
+@@ -2198,3 +2198,20 @@ def test_full_output_vvv(pytester: Pytester) -> None:
+         ]
+     )
+     result.stdout.no_fnmatch_line(expected_non_vvv_arg_line)
++
++
++def test_semantic_dict_assertion_order(pytester: Pytester) -> None:
++    pytester.makepyfile(
++        test_order="""
++        def test_order():
++            assert {"b": 2, "a": 1} == {}
++        """
++    )
++    result = pytester.runpytest("-vv")
++    result.stdout.fnmatch_lines(
++        [
++            "* + *'b': 2,",
++            "* + *'a': 1,",
++            "test_order.py:*: AssertionError",
++        ]
++    )

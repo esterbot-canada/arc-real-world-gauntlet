@@ -1,5 +1,16 @@
 # Pytest PR #14193 ARC Retrospective
 
+## Semantic Scope Follow-Up
+
+The controlled [semantic-scope experiment](semantic-scope/README.md) tests the
+stronger question raised by this retrospective: can ARC detect behavioral
+scope violations inside allowed files after path checks and focused tests
+pass?
+
+Current result: **Fail**, with `0/12` contract violations detected and all 20
+scenarios receiving `Pass`. This means the retrospective below validates
+path/evidence plumbing, not semantic-scope enforcement.
+
 This packet applies ARC retrospectively to
 [`pytest-dev/pytest` PR #14193](https://github.com/pytest-dev/pytest/pull/14193),
 a backport to the `9.0.x` maintenance branch.
@@ -55,4 +66,3 @@ npm run arc:pytest-pilot
 
 The runner uses only checked-in fixtures. It does not fetch GitHub or consume
 post-cutoff outcome data.
-

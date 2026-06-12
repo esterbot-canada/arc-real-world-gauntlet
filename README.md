@@ -28,6 +28,8 @@ For the public pytest retrospective:
 - [Limitations](pilots/pytest-backport-14193/LIMITATIONS.md)
 - [Frozen reconstructed contract](pilots/pytest-backport-14193/contracts/pytest-backport-14193.aiplan)
 - [Historical Trust Brief](pilots/pytest-backport-14193/evidence/trust-briefs/historical-backport.md)
+- [Semantic-scope capability experiment](pilots/pytest-backport-14193/semantic-scope/README.md)
+- [Semantic-scope result](pilots/pytest-backport-14193/semantic-scope/RESULTS.md)
 
 The Nearby_Yam packet contains seven synthetic local commits. The pytest packet
 is a retrospective reconstruction around one historical public pull request.
@@ -44,6 +46,7 @@ Requirements:
 ```bash
 npm test
 npm run arc:gauntlet
+npm run arc:pytest-semantic
 uv run --project arc --extra dev pytest
 ```
 
@@ -56,6 +59,7 @@ pytest retrospective scenarios.
 - `.arc/scenarios/`: adversarial gauntlet fixtures
 - `pilots/nearby-yam/`: complete public pilot packet
 - `pilots/pytest-backport-14193/`: public retrospective and controlled mutations
+- `pilots/pytest-backport-14193/semantic-scope/`: frozen semantic capability benchmark
 - `src/` and `test/`: small sample application used by the gauntlet
 
 The previous copied dashboard, API, database, and ingestion application was

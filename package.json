@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "arc:gauntlet": "uv run --project arc python arc/scripts/run_gauntlet.py"
+    "arc:fixtures": "uv run --project arc python arc/scripts/run_gauntlet.py",
+    "arc:pytest-pilot": "uv run --project arc python arc/scripts/run_pytest_pilot.py",
+    "arc:gauntlet": "npm run arc:fixtures && npm run arc:pytest-pilot"
   },
   "engines": {
     "node": ">=24"

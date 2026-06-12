@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "contract_hash_method": "SHA-256 of canonical JSON containing status, allowed_scope, excluded_scope, and expected_evidence; freeze metadata excluded",
+  "fields": {
+    "allowed_scope.files": {
+      "classification": "source_derived",
+      "sources": [
+        "../sources/pre-cutoff/pr-14050.json",
+        "../sources/pre-cutoff/pr-14193.json"
+      ],
+      "reason": "The backport states it is the merged #14050 change and modifies the same six paths."
+    },
+    "excluded_scope.files": {
+      "classification": "operator_inferred",
+      "sources": [],
+      "reason": "No explicit excluded paths were published, so the contract leaves this list empty rather than inventing protected paths."
+    },
+    "expected_evidence.required_commands": {
+      "classification": "operator_inferred",
+      "sources": [
+        "../sources/pre-cutoff/pr-14050.json",
+        "../sources/pre-cutoff/pr-14193.json"
+      ],
+      "reason": "The focused command targets both changed pytest test modules. GitHub CI was green, but no same-run ARC receipt for this exact command exists."
+    },
+    "release_classification": {
+      "classification": "unresolved_operator_focus",
+      "sources": [
+        "../sources/pre-cutoff/pr-14193.json"
+      ],
+      "reason": "The target was the 9.0.x maintenance branch and the patch changed assertion output behavior. No frozen approval criterion for patch-release suitability was published."
+    }
+  }
+}
+

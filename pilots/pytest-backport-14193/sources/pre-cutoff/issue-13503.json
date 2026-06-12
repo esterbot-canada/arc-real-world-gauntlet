@@ -1,0 +1,10 @@
+{
+  "number": 13503,
+  "title": "Failure output order of dictionary keys is alphabetical instead of insertion order",
+  "url": "https://github.com/pytest-dev/pytest/issues/13503",
+  "created_at": "2025-06-09T22:52:40Z",
+  "closed_at": "2026-02-14T16:33:31Z",
+  "request_summary": "Preserve dictionary insertion order in assertion failure output instead of alphabetically sorting keys.",
+  "reproducer_summary": "Compare a populated insertion-ordered dictionary with an empty dictionary under pytest -vv and inspect the assertion explanation."
+}
+

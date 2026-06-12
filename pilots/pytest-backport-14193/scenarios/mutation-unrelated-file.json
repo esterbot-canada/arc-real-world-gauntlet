@@ -1,0 +1,21 @@
+{
+  "id": "mutation-unrelated-file",
+  "description": "Controlled mutation adding an unrelated README change while preserving passing command evidence.",
+  "changed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py",
+    "README.rst"
+  ],
+  "receipt": {
+    "command": "pytest testing/io/test_saferepr.py testing/test_assertion.py",
+    "exit_code": 0,
+    "output_sha256": "7cae6384b308d9c7fd31b63014585d4b0ec1c3a6919edfda55b335b9c9c26055"
+  },
+  "operator_findings": [],
+  "expected_verdict": "needs_review"
+}
+

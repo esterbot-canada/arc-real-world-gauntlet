@@ -1,0 +1,16 @@
+{
+  "number": 14366,
+  "title": "[9.0.x] Revert \"Fix: assertrepr_compare respects dict insertion order (#14050) (#14193)\"",
+  "url": "https://github.com/pytest-dev/pytest/pull/14366",
+  "created_at": "2026-04-07T16:34:16Z",
+  "merged_at": "2026-04-07T16:48:47Z",
+  "reverted_commit": "60fb59d341a6373e632849de0a35b90aa85f0d61",
+  "outcome_summary": "The 9.0.x backport was reverted to wait for 9.1.0.",
+  "maintainer_reason": {
+    "source_url": "https://github.com/pytest-dev/pytest/pull/14193#issuecomment-4200642777",
+    "created_at": "2026-04-07T16:31:35Z",
+    "summary": "A maintainer judged the change too behaviorally significant for a patch release and not a regression fix."
+  },
+  "verifier_input": false
+}
+

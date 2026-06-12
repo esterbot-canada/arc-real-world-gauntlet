@@ -1,0 +1,20 @@
+{
+  "id": "mutation-failed-evidence",
+  "description": "Controlled mutation with a failed required command receipt.",
+  "changed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
+  ],
+  "receipt": {
+    "command": "pytest testing/io/test_saferepr.py testing/test_assertion.py",
+    "exit_code": 1,
+    "output_sha256": "308d08db2f01cd653728470b65f47c620f574b425c650a296c581e8533f7b928"
+  },
+  "operator_findings": [],
+  "expected_verdict": "blocked"
+}
+

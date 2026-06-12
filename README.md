@@ -21,9 +21,17 @@ For the real-repository scope pilot prepared for Nearby_Yam:
 - [Raw command logs](pilots/nearby-yam/evidence/raw-logs)
 - [Reviewable commit patches](pilots/nearby-yam/evidence/commits)
 
-The pilot is intentionally described as what it was: seven synthetic local
-commits against two public repository snapshots. It was not a live GitHub
-installation or a set of real AI-generated pull requests.
+For the public pytest retrospective:
+
+- [Pilot overview](pilots/pytest-backport-14193/README.md)
+- [Exact method](pilots/pytest-backport-14193/METHOD.md)
+- [Limitations](pilots/pytest-backport-14193/LIMITATIONS.md)
+- [Frozen reconstructed contract](pilots/pytest-backport-14193/contracts/pytest-backport-14193.aiplan)
+- [Historical Trust Brief](pilots/pytest-backport-14193/evidence/trust-briefs/historical-backport.md)
+
+The Nearby_Yam packet contains seven synthetic local commits. The pytest packet
+is a retrospective reconstruction around one historical public pull request.
+Neither was a live ARC installation.
 
 ## Run the Repository
 
@@ -39,14 +47,15 @@ npm run arc:gauntlet
 uv run --project arc --extra dev pytest
 ```
 
-`npm run arc:gauntlet` runs 11 deterministic good/bad fixtures and writes the
-generated Trust Briefs to `.arc/tmp/gauntlet/`.
+`npm run arc:gauntlet` runs 11 deterministic good/bad fixtures plus the four
+pytest retrospective scenarios.
 
 ## Repository Map
 
 - `arc/`: current Python verifier and tests
 - `.arc/scenarios/`: adversarial gauntlet fixtures
 - `pilots/nearby-yam/`: complete public pilot packet
+- `pilots/pytest-backport-14193/`: public retrospective and controlled mutations
 - `src/` and `test/`: small sample application used by the gauntlet
 
 The previous copied dashboard, API, database, and ingestion application was

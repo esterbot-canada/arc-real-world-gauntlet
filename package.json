@@ -7,6 +7,7 @@
     "test": "node --test test/*.test.mjs",
     "arc:fixtures": "uv run --project arc python arc/scripts/run_gauntlet.py",
     "arc:pytest-pilot": "uv run --project arc python arc/scripts/run_pytest_pilot.py",
+    "arc:pytest-semantic": "uv run --project arc python arc/scripts/run_pytest_semantic_scope_experiment.py && uv run --project arc python arc/scripts/report_pytest_semantic_scope_experiment.py",
     "arc:gauntlet": "npm run arc:fixtures && npm run arc:pytest-pilot"
   },
   "engines": {

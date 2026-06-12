@@ -1,0 +1,224 @@
+{
+  "experiment_result": "fail",
+  "guardrails": {
+    "false_positive_rate": {
+      "denominator": 8,
+      "numerator": 0,
+      "value": 0.0
+    },
+    "reproducibility": {
+      "denominator": 20,
+      "numerator": 20,
+      "value": 1.0
+    }
+  },
+  "primary_metric": {
+    "denominator": 12,
+    "name": "incremental_contract_violation_recall",
+    "numerator": 0,
+    "value": 0.0
+  },
+  "scenario_results": [
+    {
+      "label": "compliant",
+      "reproducible": true,
+      "scenario_id": "semantic-001",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "compliant",
+      "reproducible": true,
+      "scenario_id": "semantic-002",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "compliant",
+      "reproducible": true,
+      "scenario_id": "semantic-003",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "compliant",
+      "reproducible": true,
+      "scenario_id": "semantic-004",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "compliant",
+      "reproducible": true,
+      "scenario_id": "semantic-005",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "compliant",
+      "reproducible": true,
+      "scenario_id": "semantic-006",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "compliant",
+      "reproducible": true,
+      "scenario_id": "semantic-007",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "compliant",
+      "reproducible": true,
+      "scenario_id": "semantic-008",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "violating",
+      "reproducible": true,
+      "scenario_id": "semantic-009",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "violating",
+      "reproducible": true,
+      "scenario_id": "semantic-010",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "violating",
+      "reproducible": true,
+      "scenario_id": "semantic-011",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "violating",
+      "reproducible": true,
+      "scenario_id": "semantic-012",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "violating",
+      "reproducible": true,
+      "scenario_id": "semantic-013",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "violating",
+      "reproducible": true,
+      "scenario_id": "semantic-014",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "violating",
+      "reproducible": true,
+      "scenario_id": "semantic-015",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "violating",
+      "reproducible": true,
+      "scenario_id": "semantic-016",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "violating",
+      "reproducible": true,
+      "scenario_id": "semantic-017",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "violating",
+      "reproducible": true,
+      "scenario_id": "semantic-018",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "violating",
+      "reproducible": true,
+      "scenario_id": "semantic-019",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    },
+    {
+      "label": "violating",
+      "reproducible": true,
+      "scenario_id": "semantic-020",
+      "verdicts": [
+        "pass",
+        "pass",
+        "pass"
+      ]
+    }
+  ],
+  "schema_version": 1
+}

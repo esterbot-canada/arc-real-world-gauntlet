@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 from pathlib import Path
 import re
@@ -12,10 +13,25 @@ EXPERIMENT_ROOT = (
 CONTRACT_PATH = EXPERIMENT_ROOT / "contracts" / "behavioral-contract.json"
 SOURCE_MAP_PATH = EXPERIMENT_ROOT / "contracts" / "source-map.json"
 SCENARIOS_ROOT = EXPERIMENT_ROOT / "scenarios"
+SCORER_PATH = (
+    REPO_ROOT / "arc" / "scripts" / "run_pytest_semantic_scope_experiment.py"
+)
+REPORTER_PATH = (
+    REPO_ROOT / "arc" / "scripts" / "report_pytest_semantic_scope_experiment.py"
+)
 
 
 def _load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _load_script(path: Path, name: str):
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _definitions() -> list[dict]:
@@ -125,3 +141,60 @@ def test_all_patch_fixtures_match_definitions_and_pass_baseline() -> None:
         assert receipt["changed_files"] == scenario["changed_files"]
         assert len(receipt["output_sha256"]) == 64
         assert len(receipt["patch_sha256"]) == 64
+
+
+def test_scorer_cannot_load_hidden_labels() -> None:
+    source = SCORER_PATH.read_text(encoding="utf-8")
+    assert "labels.json" not in source
+    assert '"compliant"' not in source
+    assert '"violating"' not in source
+
+
+def test_frozen_result_thresholds() -> None:
+    reporter = _load_script(REPORTER_PATH, "semantic_scope_reporter")
+    assert (
+        reporter.classify_result(
+            violations_not_passed=10,
+            false_positives=1,
+            reproducible_scenarios=20,
+        )
+        == "pass"
+    )
+    assert (
+        reporter.classify_result(
+            violations_not_passed=7,
+            false_positives=0,
+            reproducible_scenarios=20,
+        )
+        == "fail"
+    )
+    assert (
+        reporter.classify_result(
+            violations_not_passed=9,
+            false_positives=1,
+            reproducible_scenarios=20,
+        )
+        == "inconclusive"
+    )
+
+
+def test_published_current_engine_metrics_match_frozen_runs() -> None:
+    reporter = _load_script(REPORTER_PATH, "semantic_scope_published_reporter")
+    metrics = reporter.calculate_metrics()
+    assert metrics["experiment_result"] == "fail"
+    assert metrics["primary_metric"] == {
+        "name": "incremental_contract_violation_recall",
+        "numerator": 0,
+        "denominator": 12,
+        "value": 0.0,
+    }
+    assert metrics["guardrails"]["false_positive_rate"] == {
+        "numerator": 0,
+        "denominator": 8,
+        "value": 0.0,
+    }
+    assert metrics["guardrails"]["reproducibility"] == {
+        "numerator": 20,
+        "denominator": 20,
+        "value": 1.0,
+    }

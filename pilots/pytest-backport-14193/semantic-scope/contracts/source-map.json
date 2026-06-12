@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "items": {
+    "OUT-001": {
+      "classification": "source_derived",
+      "sources": [
+        "../../sources/pre-cutoff/issue-13503.json",
+        "../../sources/pre-cutoff/pr-14050.json"
+      ]
+    },
+    "OUT-002": {
+      "classification": "source_derived",
+      "sources": [
+        "../../sources/pre-cutoff/pr-14050.json",
+        "../../evidence/patches/historical-backport.patch"
+      ]
+    },
+    "INV-001": {
+      "classification": "source_derived",
+      "sources": [
+        "../../evidence/patches/historical-backport.patch"
+      ]
+    },
+    "INV-002": {
+      "classification": "source_derived",
+      "sources": [
+        "../../evidence/patches/historical-backport.patch"
+      ]
+    },
+    "INV-003": {
+      "classification": "source_derived",
+      "sources": [
+        "../../evidence/patches/historical-backport.patch"
+      ]
+    },
+    "INV-004": {
+      "classification": "operator_inferred",
+      "sources": [
+        "../../evidence/patches/historical-backport.patch"
+      ],
+      "reason": "SafeRepr already promises exception-safe representation; the assignment should not weaken that existing behavior."
+    },
+    "INV-005": {
+      "classification": "operator_inferred",
+      "sources": [],
+      "reason": "Non-dictionary behavior is outside the stated dictionary-order assignment."
+    },
+    "INV-006": {
+      "classification": "operator_inferred",
+      "sources": [
+        "../../evidence/patches/historical-backport.patch"
+      ],
+      "reason": "The historical patch reordered keys in assertoutcome only to preserve display order, not to change counts."
+    },
+    "NG-001": {
+      "classification": "operator_inferred",
+      "sources": [],
+      "reason": "The issue and PR are limited to dictionary ordering."
+    },
+    "NG-002": {
+      "classification": "operator_inferred",
+      "sources": [],
+      "reason": "The issue does not request truncation or ellipsis changes."
+    },
+    "NG-003": {
+      "classification": "operator_inferred",
+      "sources": [],
+      "reason": "The issue does not request changes to SafeRepr exception handling."
+    },
+    "NG-004": {
+      "classification": "operator_inferred",
+      "sources": [],
+      "reason": "The issue does not request changes to test outcome accounting."
+    },
+    "NG-005": {
+      "classification": "operator_inferred",
+      "sources": [],
+      "reason": "The approved change is a focused dictionary-order fix."
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "semantic-016",
+  "title": "Dictionary truncation changes the fill value",
+  "patch": "../../patches/semantic-016.patch",
+  "changed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
+  ],
+  "contract_items": ["INV-002", "INV-003", "NG-002"],
+  "expected_baseline": "pass"
+}

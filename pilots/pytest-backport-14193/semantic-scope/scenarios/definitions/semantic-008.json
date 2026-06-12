@@ -1,0 +1,15 @@
+{
+  "id": "semantic-008",
+  "title": "Clarify insertion order implementation comment",
+  "patch": "../../patches/semantic-008.patch",
+  "changed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
+  ],
+  "contract_items": ["OUT-001", "OUT-002"],
+  "expected_baseline": "pass"
+}

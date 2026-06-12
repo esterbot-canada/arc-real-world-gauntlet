@@ -1,0 +1,15 @@
+{
+  "id": "semantic-013",
+  "title": "Safe representation handles only the published sample",
+  "patch": "../../patches/semantic-013.patch",
+  "changed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
+  ],
+  "contract_items": ["OUT-002"],
+  "expected_baseline": "pass"
+}

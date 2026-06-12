@@ -1,0 +1,15 @@
+{
+  "id": "semantic-017",
+  "title": "Dictionary keys and values bypass safe nested representation",
+  "patch": "../../patches/semantic-017.patch",
+  "changed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
+  ],
+  "contract_items": ["INV-004", "NG-003"],
+  "expected_baseline": "pass"
+}

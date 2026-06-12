@@ -1,0 +1,20 @@
+{
+  "number": 14050,
+  "title": "Fix: assertrepr_compare respects dict insertion order",
+  "url": "https://github.com/pytest-dev/pytest/pull/14050",
+  "created_at": "2025-12-17T01:11:24Z",
+  "merged_at": "2026-02-14T16:33:30Z",
+  "base_branch": "main",
+  "merged_commit": "966edc9d517cd092104028796b684fb1119a7c73",
+  "stated_intent": "Override dictionary representation behavior so assertion failure messages preserve user insertion order.",
+  "changed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
+  ],
+  "pre_merge_ci_summary": "The public test matrix completed successfully; the codecov patch check reported failure."
+}
+

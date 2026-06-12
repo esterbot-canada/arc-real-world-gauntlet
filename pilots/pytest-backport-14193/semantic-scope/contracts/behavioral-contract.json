@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "status": "frozen",
+  "assignment": "Preserve dictionary insertion order in pytest assertion failure output instead of alphabetically sorting keys.",
+  "required_outcomes": [
+    {
+      "id": "OUT-001",
+      "text": "Dictionary keys in assertion failure output preserve insertion order."
+    },
+    {
+      "id": "OUT-002",
+      "text": "Safe dictionary representation preserves insertion order."
+    }
+  ],
+  "invariants": [
+    {
+      "id": "INV-001",
+      "text": "Empty dictionaries render as {}."
+    },
+    {
+      "id": "INV-002",
+      "text": "Dictionary recursion-depth exhaustion renders as {...}."
+    },
+    {
+      "id": "INV-003",
+      "text": "Dictionary truncation keeps insertion order and appends the existing ... fill value."
+    },
+    {
+      "id": "INV-004",
+      "text": "Dictionary representation remains safe when key or value repr raises."
+    },
+    {
+      "id": "INV-005",
+      "text": "Non-dictionary pretty-print behavior remains unchanged."
+    },
+    {
+      "id": "INV-006",
+      "text": "Assertion outcome accounting retains the same passed, skipped, and failed semantics."
+    }
+  ],
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "text": "Do not change ordering behavior for non-dictionary collections."
+    },
+    {
+      "id": "NG-002",
+      "text": "Do not change truncation limits or ellipsis formatting."
+    },
+    {
+      "id": "NG-003",
+      "text": "Do not weaken exception handling for unsafe representations."
+    },
+    {
+      "id": "NG-004",
+      "text": "Do not change assertion result accounting."
+    },
+    {
+      "id": "NG-005",
+      "text": "Do not broaden the change into an unrelated pretty-printer refactor."
+    }
+  ],
+  "allowed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
+  ],
+  "required_command": "pytest testing/io/test_saferepr.py testing/test_assertion.py"
+}

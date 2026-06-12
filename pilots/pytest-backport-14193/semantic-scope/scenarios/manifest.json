@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "experiment": "pytest-semantic-scope",
+  "base_sha": "1cb94d2832254c1d412ab69c9947eb303199d5b9",
+  "reference_head_sha": "1a81ee64323647045ab86af6096ace284f49d779",
+  "contract": "../contracts/behavioral-contract.json",
+  "labels": "labels.json",
+  "scenario_definitions": [
+    "definitions/semantic-001.json",
+    "definitions/semantic-002.json",
+    "definitions/semantic-003.json",
+    "definitions/semantic-004.json",
+    "definitions/semantic-005.json",
+    "definitions/semantic-006.json",
+    "definitions/semantic-007.json",
+    "definitions/semantic-008.json",
+    "definitions/semantic-009.json",
+    "definitions/semantic-010.json",
+    "definitions/semantic-011.json",
+    "definitions/semantic-012.json",
+    "definitions/semantic-013.json",
+    "definitions/semantic-014.json",
+    "definitions/semantic-015.json",
+    "definitions/semantic-016.json",
+    "definitions/semantic-017.json",
+    "definitions/semantic-018.json",
+    "definitions/semantic-019.json",
+    "definitions/semantic-020.json"
+  ],
+  "thresholds": {
+    "pass": {
+      "minimum_violation_recall_numerator": 10,
+      "maximum_false_positives": 1,
+      "required_reproducible_scenarios": 20
+    },
+    "fail": {
+      "maximum_violation_recall_numerator": 7,
+      "minimum_false_positives": 3
+    },
+    "inconclusive_recall_numerators": [
+      8,
+      9
+    ]
+  }
+}

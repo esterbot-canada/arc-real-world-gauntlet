@@ -1,0 +1,15 @@
+{
+  "id": "semantic-007",
+  "title": "Use explicit fill value extension",
+  "patch": "../../patches/semantic-007.patch",
+  "changed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
+  ],
+  "contract_items": ["OUT-002", "INV-003"],
+  "expected_baseline": "pass"
+}

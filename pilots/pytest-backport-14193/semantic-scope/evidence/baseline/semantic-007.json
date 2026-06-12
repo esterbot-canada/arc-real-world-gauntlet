@@ -1,0 +1,19 @@
+{
+  "changed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
+  ],
+  "command": "pytest testing/io/test_saferepr.py testing/test_assertion.py",
+  "duration_ms": 26808,
+  "exit_code": 0,
+  "head_sha": "92b394cd215490f5ce417994f4b2c4acb0930497",
+  "output_sha256": "30e56b6137e072fb7e81a4931e4f424a63d4e2016a845d5accd10111b235507d",
+  "passed": true,
+  "patch_sha256": "a9fd50ec23fb891168300cb26f774298ee88ba653ab912adc9bd4db56c592eee",
+  "scenario_id": "semantic-007",
+  "schema_version": 1
+}

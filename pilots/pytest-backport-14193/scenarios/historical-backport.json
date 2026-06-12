@@ -1,0 +1,36 @@
+{
+  "id": "historical-backport",
+  "description": "Exact PR #14193 changed-file set with no same-run ARC command receipt.",
+  "changed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
+  ],
+  "receipt": null,
+  "operator_findings": [
+    {
+      "rule_id": "historical_contract_provenance",
+      "severity": "needs_review",
+      "message": "The assignment contract was reconstructed after the merge",
+      "evidence": [
+        "pytest did not publish or approve this ARC contract",
+        "Scope is source-derived; focused command and release focus are operator-inferred"
+      ]
+    },
+    {
+      "rule_id": "release_classification",
+      "severity": "needs_review",
+      "message": "Patch-release suitability has no frozen approval evidence",
+      "evidence": [
+        "Target branch: 9.0.x",
+        "The assignment changes assertion-output behavior",
+        "ARC cannot determine release-policy suitability from path and command evidence"
+      ]
+    }
+  ],
+  "expected_verdict": "needs_review"
+}
+

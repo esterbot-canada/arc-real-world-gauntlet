@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "date": "2026-06-12",
+  "pilot_type": "retrospective_public_backport",
+  "repository": "pytest-dev/pytest",
+  "pull_request": 14193,
+  "cutoff_at": "2026-02-14T17:02:08Z",
+  "base_sha": "1cb94d2832254c1d412ab69c9947eb303199d5b9",
+  "head_sha": "1a81ee64323647045ab86af6096ace284f49d779",
+  "patch_sha256": "73e2afb9e22bc747fb608466c8656e3f5eccea4516f9612ec99831e4f68595cc",
+  "contract": "../contracts/pytest-backport-14193.aiplan",
+  "scenarios": [
+    "historical-backport.json",
+    "mutation-unrelated-file.json",
+    "mutation-missing-evidence.json",
+    "mutation-failed-evidence.json"
+  ]
+}
+

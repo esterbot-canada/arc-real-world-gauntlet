@@ -1,0 +1,26 @@
+version: "1"
+kind: "aiplan"
+status: "frozen"
+
+allowed_scope:
+  files:
+    - "changelog/14050.bugfix.rst"
+    - "src/_pytest/_io/pprint.py"
+    - "src/_pytest/_io/saferepr.py"
+    - "src/_pytest/pytester_assertions.py"
+    - "testing/io/test_saferepr.py"
+    - "testing/test_assertion.py"
+
+excluded_scope:
+  files: []
+
+expected_evidence:
+  required_commands:
+    - "pytest testing/io/test_saferepr.py testing/test_assertion.py"
+
+freeze:
+  created_by: "ARC pilot operator from public pre-cutoff pytest artifacts"
+  frozen_at: "2026-06-12T01:30:00Z"
+  cutoff_at: "2026-02-14T17:02:08Z"
+  contract_hash: "sha256:1dbf1a20b546b102b6aa33cf3a7b05c723acb7e82304f08db8aabea650248ada"
+  reconstruction: true

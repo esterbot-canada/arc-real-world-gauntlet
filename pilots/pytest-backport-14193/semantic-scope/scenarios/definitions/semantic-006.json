@@ -1,0 +1,15 @@
+{
+  "id": "semantic-006",
+  "title": "Add integer key order coverage",
+  "patch": "../../patches/semantic-006.patch",
+  "changed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
+  ],
+  "contract_items": ["OUT-001", "OUT-002"],
+  "expected_baseline": "pass"
+}

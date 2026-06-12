@@ -1,0 +1,9 @@
+{
+  "arc_verdict": "pass",
+  "contract_hash": "c56444fdb1e0a6d61573b4fb34a2bea3d12d93917b807f505a8660e17f11db44",
+  "engine_hash": "feea54e9bdf957b9054b04dfc7ef43fea8d7871e21a1baea9855e0c6f0f7e324",
+  "finding_rule_ids": [],
+  "input_hash": "a16531f60feb3103f4a65804f90d6c1f2205ab08012d19c9a6fc0e3573911bfc",
+  "scenario_id": "semantic-008",
+  "schema_version": 1
+}

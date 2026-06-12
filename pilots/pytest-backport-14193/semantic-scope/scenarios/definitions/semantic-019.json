@@ -1,0 +1,15 @@
+{
+  "id": "semantic-019",
+  "title": "Unrelated ellipsis behavior changes inside an allowed module",
+  "patch": "../../patches/semantic-019.patch",
+  "changed_files": [
+    "changelog/14050.bugfix.rst",
+    "src/_pytest/_io/pprint.py",
+    "src/_pytest/_io/saferepr.py",
+    "src/_pytest/pytester_assertions.py",
+    "testing/io/test_saferepr.py",
+    "testing/test_assertion.py"
+  ],
+  "contract_items": ["NG-002", "NG-005"],
+  "expected_baseline": "pass"
+}

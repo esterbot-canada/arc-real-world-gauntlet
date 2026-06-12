@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "historical_receipts": [],
+  "note": "The public PR shows successful GitHub CI checks, but ARC did not execute and bind the exact required command to the reviewed head. Controlled mutation receipts live in their scenario fixtures."
+}
+

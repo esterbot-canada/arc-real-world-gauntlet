@@ -1,0 +1,9 @@
+scenario=mutation-missing-evidence
+repository=pytest-dev/pytest
+pull_request=14193
+base_sha=1cb94d2832254c1d412ab69c9947eb303199d5b9
+head_sha=1a81ee64323647045ab86af6096ace284f49d779
+expected_verdict=needs_review
+actual_verdict=needs_review
+changed_files=changelog/14050.bugfix.rst,src/_pytest/_io/pprint.py,src/_pytest/_io/saferepr.py,src/_pytest/pytester_assertions.py,testing/io/test_saferepr.py,testing/test_assertion.py
+findings=required_commands

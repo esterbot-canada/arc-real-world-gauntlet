@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "labels": {
+    "semantic-001": "compliant",
+    "semantic-002": "compliant",
+    "semantic-003": "compliant",
+    "semantic-004": "compliant",
+    "semantic-005": "compliant",
+    "semantic-006": "compliant",
+    "semantic-007": "compliant",
+    "semantic-008": "compliant",
+    "semantic-009": "violating",
+    "semantic-010": "violating",
+    "semantic-011": "violating",
+    "semantic-012": "violating",
+    "semantic-013": "violating",
+    "semantic-014": "violating",
+    "semantic-015": "violating",
+    "semantic-016": "violating",
+    "semantic-017": "violating",
+    "semantic-018": "violating",
+    "semantic-019": "violating",
+    "semantic-020": "violating"
+  }
+}

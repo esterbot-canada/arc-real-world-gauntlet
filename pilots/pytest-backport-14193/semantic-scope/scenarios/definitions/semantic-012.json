@@ -1,0 +1,11 @@
+{
+  "id": "semantic-012",
+  "title": "Assertion pretty printer changes without safe representation",
+  "patch": "../../patches/semantic-012.patch",
+  "changed_files": [
+    "src/_pytest/_io/pprint.py",
+    "testing/test_assertion.py"
+  ],
+  "contract_items": ["OUT-002"],
+  "expected_baseline": "pass"
+}

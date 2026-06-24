@@ -3,5 +3,5 @@ export function normalizeDisplayName(name) {
 }
 
 export function canShowProfile(profile) {
-  return Boolean(profile?.displayName);
+  return normalizeDisplayName(profile?.displayName).length > 0;
 }
